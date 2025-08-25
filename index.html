@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Chromatic Piano (C3–F4)</title>
+<style>
+  :root {
+    --white-w: 60px;
+    --white-h: 240px;
+    --black-w: 38px;
+    --black-h: 150px;
+  }
+  body {
+    margin: 0;
+    font-family: system-ui, Arial, sans-serif;
+    background: linear-gradient(#222, #444);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+  }
+  h1 { font-weight: 600; margin: 12px 0 6px; }
+  .hint { opacity: 0.7; margin-bottom: 16px; font-size: 14px; }
+
+  .keyboard {
+    position: relative;
+    display: block;
+    width: calc(var(--white-w) * 11); /* 11 white keys C3..F4 */
+    height: var(--white-h);
+    box-shadow: 0 10px 30px rgba(0,0,0,.4);
+    background: #111;
+    border-radius: 8px;
+    padding: 8px;
+  }
+
+  .whites, .blacks { position: absolute; inset: 8px; }
+
+  .white-key {
+    position: absolute;
+    width: var(--white-w);
+    height: var(--white-h);
+    left: 0; top: 0;
+    background: linear-gradient(#fff, #ddd);
+    border: 1px solid #999;
+    border-bottom: 3px solid #bbb;
+    border-radius: 6px 6px 10px 10px;
+    box-shadow: inset 0 -2px 0 #ccc;
+    display: grid;
+    place-items: end center;
+    padding-bottom: 10px;
+    color: #333;
+    user-select: none;
+    cursor: pointer;
+    z-index: 1;
+  }
+  .white-key.pressed { background: linear-gradient(#f2f2f2, #cfcfcf); }
+
+  .black-key {
+    position: absolute;
+    width: var(--black-w);
+    height: var(--black-h);
+    left: 0; top: 0;
+    background: linear-gradient(#111, #333);
+    border: 1px solid #000;
+    border-radius: 6px 6px 8px 8px;
+    box-shadow: 0 3px 6px rgba(0,0,0,.6), inset 0 -2px 0 rgba(255,255,255,.05);
+    display: grid;
+    place-items: end center;
+    padding-bottom: 6px;
+    color: #eee;
+    user-select: none;
+    cursor: pointer;
+    z-index: 3; /* above whites */
+  }
+  .black-key.pressed { background: linear-gradient(#202020, #444); }
+
+  .label {
+    font-size: 12px;
+    opacity: .8;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<h1>Chromatic Piano (C3–F4)</h1>
+<div class="hint">White: asdfghjkl;’ &nbsp;•&nbsp; Black: w e t y u o p</div>
+
+<div class="keyboard" id="kb">
+  <div class="whites" id="whites"></div>
+  <div class="blacks" id="blacks"></div>
+</div>
+
+<script>
+  // -------- AUDIO (pleasant tone, click-free) --------
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  const ctx = new AudioCtx();
+
+  // Single shared compressor (prevents pops, evens levels)
+  const compressor = ctx.createDynamicsCompressor();
+  compressor.threshold.value = -24;
+  compressor.knee.value = 30;
+  compressor.ratio.value = 12;
+  compressor.attack.value = 0.003;
+  compressor.release.value = 0.25;
+  compressor.connect(ctx.destination);
+
+  const active = new Map(); // note -> {osc, gain, filter}
+
+  const pitchIndex = {
+    'C':0, 'C#':1, 'Db':1,
+    'D':2, 'D#':3, 'Eb':3,
+    'E':4,
+    'F':5, 'F#':6, 'Gb':6,
+    'G':7, 'G#':8, 'Ab':8,
+    'A':9, 'A#':10, 'Bb':10,
+    'B':11
+  };
+
+  function freqOf(note) {
+    // note like 'Db3', 'F4'
+    const octave = parseInt(note.at(-1), 10);
+    const pc = note.slice(0, -1); // e.g., 'Db'
+    const idx = pitchIndex[pc];
+    const noteNum = octave * 12 + idx;        // C0 = 0
+    const A4num = 4 * 12 + 9;                 // A4
+    return 440 * Math.pow(2, (noteNum - A4num) / 12);
+  }
+
+  function startNote(note, velocity = 0.35) {
+    if (active.has(note)) return; // avoid retrigger while held
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    osc.type = 'triangle';
+    osc.frequency.value = freqOf(note);
+
+    filter.type = 'lowpass';
+    filter.frequency.value = 5200; // soften the top end a bit
+    filter.Q.value = 0.8;
+
+    // ADSR
+    const now = ctx.currentTime;
+    const A = 0.012, D = 0.06, S = 0.26; // sustain level
+    gain.gain.cancelScheduledValues(now);
+    gain.gain.setValueAtTime(0.0, now);
+    gain.gain.linearRampToValueAtTime(velocity, now + A);
+    gain.gain.linearRampToValueAtTime(S * velocity, now + A + D);
+
+    osc.connect(filter).connect(gain).connect(compressor);
+    osc.start(now);
+
+    active.set(note, { osc, gain });
+  }
+
+  function stopNote(note) {
+    const node = active.get(note);
+    if (!node) return;
+    const { osc, gain } = node;
+    const now = ctx.currentTime;
+    const R = 0.18;
+    gain.gain.cancelScheduledValues(now);
+    gain.gain.setTargetAtTime(0.0001, now, R / 3); // smooth release
+    osc.stop(now + R + 0.02);
+    active.delete(note);
+  }
+
+  // -------- LAYOUT --------
+  const whiteKeysPhysical = ["C3","D3","E3","F3","G3","A3","B3","C4","D4","E4","F4"];
+  const blackKeysPhysical = ["Db3","Eb3","Gb3","Ab3","Bb3","Db4","Eb4"];
+
+  // Keyboard mapping you specified
+  const whiteMap = ["a","s","d","f","g","h","j","k","l",";","'"];
+  const blackMap = ["w","e","t","y","u","o","p"];
+
+  // Black placement: index of the **left** white key (between i and i+1)
+  const blackBetweenIndex = {
+    "Db3":0, // between C3 & D3
+    "Eb3":1, // between D3 & E3
+    "Gb3":3, // between F3 & G3
+    "Ab3":4, // between G3 & A3
+    "Bb3":5, // between A3 & B3
+    "Db4":7, // between C4 & D4
+    "Eb4":8  // between D4 & E4
+  };
+
+  const whitesEl = document.getElementById('whites');
+  const blacksEl = document.getElementById('blacks');
+
+  const WHITE_W = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--white-w'));
+  const BLACK_W = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--black-w'));
+
+  // Create whites
+  whiteKeysPhysical.forEach((note, i) => {
+    const div = document.createElement('div');
+    div.className = 'white-key';
+    div.style.left = `${i * WHITE_W}px`;
+    div.dataset.note = note;
+    div.innerHTML = `<div class="label">${whiteMap[i]}</div>`;
+    whitesEl.appendChild(div);
+  });
+
+  // Create blacks in your requested order (and mapping!)
+  blackKeysPhysical.forEach((note, i) => {
+    const div = document.createElement('div');
+    div.className = 'black-key';
+    const leftIndex = blackBetweenIndex[note]; // integer white index on the left
+    // Center the black key exactly between the two whites:
+    const x = (leftIndex + 1) * WHITE_W - (BLACK_W / 2);
+    div.style.left = `${x}px`;
+    div.dataset.note = note;
+    div.innerHTML = `<div class="label">${blackMap[i]}</div>`;
+    blacksEl.appendChild(div);
+  });
+
+  // -------- INTERACTION --------
+  function pressVisual(note, pressed) {
+    const el = document.querySelector(`[data-note="${note}"]`);
+    if (!el) return;
+    el.classList.toggle('pressed', pressed);
+  }
+
+  const downKeys = new Set(); // prevent auto-repeat stacking
+
+  function keyToNote(key) {
+    const wi = whiteMap.indexOf(key);
+    if (wi !== -1) return whiteKeysPhysical[wi];
+    const bi = blackMap.indexOf(key);
+    if (bi !== -1) return blackKeysPhysical[bi];
+    return null;
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.repeat) return;
+    const note = keyToNote(e.key);
+    if (!note) return;
+    if (ctx.state !== 'running') ctx.resume();
+    downKeys.add(e.key);
+    pressVisual(note, true);
+    startNote(note);
+  });
+
+  document.addEventListener('keyup', (e) => {
+    if (!downKeys.has(e.key)) return;
+    downKeys.delete(e.key);
+    const note = keyToNote(e.key);
+    if (!note) return;
+    pressVisual(note, false);
+    stopNote(note);
+  });
+
+  // Mouse / touch
+  function onPointerDown(note) {
+    if (ctx.state !== 'running') ctx.resume();
+    pressVisual(note, true);
+    startNote(note);
+  }
+  function onPointerUp(note) {
+    pressVisual(note, false);
+    stopNote(note);
+  }
+
+  document.querySelectorAll('.white-key, .black-key').forEach(el => {
+    const n = el.dataset.note;
+    el.addEventListener('mousedown', () => onPointerDown(n));
+    el.addEventListener('mouseup',   () => onPointerUp(n));
+    el.addEventListener('mouseleave',() => onPointerUp(n));
+    el.addEventListener('touchstart',(ev) => { ev.preventDefault(); onPointerDown(n); }, {passive:false});
+    el.addEventListener('touchend',  () => onPointerUp(n));
+  });
+</script>
+</body>
+</html>
