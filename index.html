@@ -22,7 +22,7 @@
   }
   h1 { font-weight: 600; margin: 12px 0 6px; }
   .hint { opacity: 0.7; margin-bottom: 16px; font-size: 14px; min-height: 1.2em; }
-  .controls { margin-bottom: 12px; font-size: 15px; }
+  .controls { margin-bottom: 12px; font-size: 15px; display: flex; align-items: center; gap: 20px; }
   .controls select { font-size: 15px; }
 
   .keyboard {
@@ -82,6 +82,104 @@
     opacity: .8;
     pointer-events: none;
   }
+  
+  /* Sound selector styles */
+  .sound-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 8px;
+  }
+  
+  .sound-dial {
+    position: relative;
+    width: 150px;
+    height: 80px;
+    background: #333;
+    border-radius: 12px;
+    padding: 15px 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,.3), inset 0 1px 1px rgba(255,255,255,.1);
+    user-select: none;
+  }
+  
+  .dial-title {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ddd;
+  }
+  
+  .dial-options {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    height: 40px;
+  }
+  
+  .dial-option {
+    position: relative;
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+  
+  .dial-option:hover {
+    opacity: 0.8;
+  }
+  
+  .dial-option.active {
+    opacity: 1;
+  }
+  
+  .dial-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    margin-bottom: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.4);
+  }
+  
+  .dial-label {
+    font-size: 11px;
+    color: #ddd;
+  }
+  
+  /* Color each sound type */
+  .piano .dial-dot { background: #50c0e9; }
+  .synth .dial-dot { background: #50e97b; }
+  .organ .dial-dot { background: #e95050; }
+  .cosmic .dial-dot { background: #bf50e9; }
+  
+  /* Dial indicator line */
+  .dial-indicator {
+    position: absolute;
+    bottom: 28px;
+    left: 18.75%;
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border-radius: 50%;
+    transform: translateX(-50%);
+    transition: left 0.3s ease;
+    box-shadow: 0 0 8px rgba(255,255,255,.5);
+    z-index: 2;
+  }
+  
+  .dial-line {
+    position: absolute;
+    height: 2px;
+    background: #666;
+    bottom: 34px;
+    left: 0;
+    right: 0;
+    z-index: 1;
+  }
 </style>
 </head>
 <body>
@@ -97,6 +195,32 @@
   </select>
 </div>
 <div class="hint"></div>
+
+<div class="sound-selector">
+  <div class="sound-dial">
+    <div class="dial-title">Sound Type</div>
+    <div class="dial-line"></div>
+    <div class="dial-indicator"></div>
+    <div class="dial-options">
+      <div class="dial-option piano active" data-sound="piano">
+        <div class="dial-dot"></div>
+        <div class="dial-label">Piano</div>
+      </div>
+      <div class="dial-option synth" data-sound="synth">
+        <div class="dial-dot"></div>
+        <div class="dial-label">Synth</div>
+      </div>
+      <div class="dial-option organ" data-sound="organ">
+        <div class="dial-dot"></div>
+        <div class="dial-label">Organ</div>
+      </div>
+      <div class="dial-option cosmic" data-sound="cosmic">
+        <div class="dial-dot"></div>
+        <div class="dial-label">Cosmic</div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="keyboard" id="kb">
   <div class="whites" id="whites"></div>
@@ -118,6 +242,122 @@
   compressor.connect(ctx.destination);
 
   const active = new Map(); // note -> {osc, gain, filter}
+  let currentSound = "piano"; // Default sound
+
+  // Sound profiles
+  const soundProfiles = {
+    piano: {
+      oscillator: "triangle",
+      attack: 0.012,
+      decay: 0.06,
+      sustain: 0.26,
+      release: 0.18,
+      filterType: "lowpass",
+      filterFreq: 5200,
+      filterQ: 0.8,
+      setup: (osc, filter, gain, velocity) => {
+        // Default piano sound
+      }
+    },
+    synth: {
+      oscillator: "sawtooth",
+      attack: 0.03,
+      decay: 0.1,
+      sustain: 0.5,
+      release: 0.4,
+      filterType: "lowpass",
+      filterFreq: 2500,
+      filterQ: 5,
+      setup: (osc, filter, gain, velocity) => {
+        // Add detune for rich synth sound
+        osc.detune.value = Math.random() * 10 - 5;
+        
+        // Create a second oscillator for richer sound
+        const osc2 = ctx.createOscillator();
+        osc2.type = "square";
+        osc2.frequency.value = osc.frequency.value;
+        osc2.detune.value = 7; // Slight detune for chorus effect
+        
+        // Gain for second oscillator
+        const gain2 = ctx.createGain();
+        gain2.gain.value = 0.15;
+        
+        osc2.connect(gain2).connect(filter);
+        osc2.start();
+        
+        return { additionalOsc: osc2 };
+      }
+    },
+    organ: {
+      oscillator: "sine",
+      attack: 0.005,
+      decay: 0.01,
+      sustain: 0.98,
+      release: 0.08,
+      filterType: "highpass",
+      filterFreq: 100,
+      filterQ: 0.1,
+      setup: (osc, filter, gain, velocity) => {
+        // Create multiple oscillators for organ-like harmonics
+        const harmonics = [1, 2, 3, 4];
+        const additionalOscs = [];
+        
+        for (let i = 1; i < harmonics.length; i++) {
+          const harmOsc = ctx.createOscillator();
+          harmOsc.type = "sine";
+          harmOsc.frequency.value = osc.frequency.value * harmonics[i];
+          
+          const harmGain = ctx.createGain();
+          harmGain.gain.value = velocity * (0.75 / (i+1)); // Decrease volume for higher harmonics
+          
+          harmOsc.connect(harmGain).connect(filter);
+          harmOsc.start();
+          additionalOscs.push(harmOsc);
+        }
+        
+        // Override filter settings for organ
+        filter.type = "lowpass";
+        filter.frequency.value = 3000;
+        
+        return { additionalOscs };
+      }
+    },
+    cosmic: {
+      oscillator: "sine",
+      attack: 0.1,
+      decay: 0.4,
+      sustain: 0.4,
+      release: 2.0,
+      filterType: "bandpass",
+      filterFreq: 1000,
+      filterQ: 4,
+      setup: (osc, filter, gain, velocity) => {
+        // Create modulation
+        const lfo = ctx.createOscillator();
+        const lfoGain = ctx.createGain();
+        lfo.frequency.value = 5 + Math.random() * 3; // Random LFO rate
+        lfoGain.gain.value = 100; // LFO depth
+        
+        // Connect LFO to filter frequency
+        lfo.connect(lfoGain);
+        lfoGain.connect(filter.frequency);
+        lfo.start();
+        
+        // Add delay for spacey effect
+        const delay = ctx.createDelay();
+        const delayFeedback = ctx.createGain();
+        delay.delayTime.value = 0.4;
+        delayFeedback.gain.value = 0.3;
+        
+        gain.connect(delay);
+        delay.connect(delayFeedback);
+        delayFeedback.connect(delay);
+        delay.connect(compressor);
+        
+        return { lfo, delay };
+      }
+    }
+  };
 
   const pitchIndex = {
     'C':0, 'C#':1, 'Db':1,
@@ -143,20 +383,22 @@
     const finalNote = note.slice(0,-1) + (parseInt(note.at(-1), 10) + octaveOffset);
     if (active.has(finalNote)) return; // avoid retrigger while held
     
+    const profile = soundProfiles[currentSound];
+    
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     const filter = ctx.createBiquadFilter();
 
-    osc.type = 'triangle';
+    osc.type = profile.oscillator;
     osc.frequency.value = freqOf(note, octaveOffset);
 
-    filter.type = 'lowpass';
-    filter.frequency.value = 5200; // soften the top end a bit
-    filter.Q.value = 0.8;
+    filter.type = profile.filterType;
+    filter.frequency.value = profile.filterFreq;
+    filter.Q.value = profile.filterQ;
 
     // ADSR
     const now = ctx.currentTime;
-    const A = 0.012, D = 0.06, S = 0.26; // sustain level
+    const A = profile.attack, D = profile.decay, S = profile.sustain; // sustain level
     gain.gain.cancelScheduledValues(now);
     gain.gain.setValueAtTime(0.0, now);
     gain.gain.linearRampToValueAtTime(velocity, now + A);
@@ -164,20 +406,47 @@
 
     osc.connect(filter).connect(gain).connect(compressor);
     osc.start(now);
-
-    active.set(finalNote, { osc, gain });
+    
+    // Apply sound-specific setups and collect any additional nodes
+    const additionalNodes = profile.setup ? profile.setup(osc, filter, gain, velocity) : {};
+    
+    active.set(finalNote, { 
+      osc, 
+      gain, 
+      filter,
+      ...additionalNodes
+    });
   }
 
   function stopNote(note, octaveOffset = 0) {
     const finalNote = note.slice(0,-1) + (parseInt(note.at(-1), 10) + octaveOffset);
     const node = active.get(finalNote);
     if (!node) return;
+    
     const { osc, gain } = node;
+    const profile = soundProfiles[currentSound];
     const now = ctx.currentTime;
-    const R = 0.18;
+    const R = profile.release;
+    
     gain.gain.cancelScheduledValues(now);
     gain.gain.setTargetAtTime(0.0001, now, R / 3); // smooth release
     osc.stop(now + R + 0.02);
+    
+    // Clean up any additional oscillators
+    if (node.additionalOsc) {
+      node.additionalOsc.stop(now + R + 0.02);
+    }
+    
+    if (node.additionalOscs) {
+      node.additionalOscs.forEach(osc => {
+        osc.stop(now + R + 0.02);
+      });
+    }
+    
+    if (node.lfo) {
+      node.lfo.stop(now + R + 0.02);
+    }
+    
     active.delete(finalNote);
   }
 
@@ -404,6 +673,30 @@
   const octaveSelect = document.getElementById('octave-select');
   octaveSelect.addEventListener('change', (e) => {
     drawKeyboard(parseInt(e.target.value, 10));
+  });
+
+  // Sound selector functionality
+  const dialOptions = document.querySelectorAll('.dial-option');
+  const dialIndicator = document.querySelector('.dial-indicator');
+  
+  dialOptions.forEach((option, index) => {
+    option.addEventListener('click', () => {
+      // Update active option
+      dialOptions.forEach(opt => opt.classList.remove('active'));
+      option.classList.add('active');
+      
+      // Move the indicator
+      const positions = [18.75, 43.75, 68.75, 93.75]; // Position percentages for 4 options
+      dialIndicator.style.left = positions[index] + '%';
+      
+      // Update sound type
+      currentSound = option.dataset.sound;
+      
+      // Stop any currently playing notes to prevent inconsistent sound state
+      for (const [note, nodeInfo] of active.entries()) {
+        stopNote(note, 0);
+      }
+    });
   });
 
   drawKeyboard(parseInt(octaveSelect.value, 10));
