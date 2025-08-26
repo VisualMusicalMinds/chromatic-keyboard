@@ -337,30 +337,33 @@
     el.classList.toggle('pressed', pressed);
   }
 
-  const downKeys = new Set(); // prevent auto-repeat stacking
+  const downKeys = new Map(); // Use a map to store state for each key
 
   function keyToNote(key) {
     return keyNoteMap[key] || null;
   }
 
   document.addEventListener('keydown', (e) => {
-    if (e.repeat) return;
+    if (e.repeat || downKeys.has(e.code)) return;
+
     const isShifted = e.shiftKey || e.getModifierState("CapsLock");
     let key = e.key;
 
-    // Handle special keys for shifted black notes
     if (isShifted) {
         const shiftedBlackMap = {'@':'2', '#':'3', '%':'5', '^':'6', '&':'7', '(':'9', ')':'0'};
         if (shiftedBlackMap[key]) {
             key = shiftedBlackMap[key];
         }
     }
+    if (key.length === 1 && key.toLowerCase() !== key.toUpperCase()) {
+        key = key.toLowerCase();
+    }
 
     const note = keyToNote(key);
     if (!note) return;
 
     if (ctx.state !== 'running') ctx.resume();
-    downKeys.add(e.key);
+    downKeys.set(e.code, { note: note, shifted: isShifted });
     pressVisual(note, true);
 
     const octaveOffset = (isShifted) ? 2 : 0;
@@ -368,22 +371,14 @@
   });
 
   document.addEventListener('keyup', (e) => {
-    if (!downKeys.has(e.key)) return;
-    downKeys.delete(e.key);
+    const downKeyInfo = downKeys.get(e.code);
+    if (!downKeyInfo) return;
+    downKeys.delete(e.code);
 
-    const isShifted = e.shiftKey || e.getModifierState("CapsLock");
-    let key = e.key;
-    if (isShifted) {
-        const shiftedBlackMap = {'@':'2', '#':'3', '%':'5', '^':'6', '&':'7', '(':'9', ')':'0'};
-        if (shiftedBlackMap[key]) {
-            key = shiftedBlackMap[key];
-        }
-    }
-    const note = keyToNote(key);
-    if (!note) return;
+    const { note, shifted } = downKeyInfo;
 
     pressVisual(note, false);
-    const octaveOffset = (isShifted) ? 2 : 0;
+    const octaveOffset = (shifted) ? 2 : 0;
     stopNote(note, octaveOffset);
   });
 
