@@ -321,60 +321,41 @@ const knob = document.querySelector('.knob');
 const soundLabels = document.querySelectorAll('.sound-labels span');
 const octaveToggleOptions = document.querySelectorAll('.toggle-option');
 
-// Sound Knob Logic
-let isDragging = false;
-let currentAngle = -120; // Initial angle (10 o'clock)
 const soundStops = [-120, -156, 156, 120]; // Piano (8), Synth (34), Organ (26), Cosmic (4)
 const sounds = ["piano", "synth", "organ", "cosmic"];
+let currentSoundIndex = 0;
 
-function updateSound(angle) {
-    const closestStop = soundStops.reduce((prev, curr) => {
-        return (Math.abs(curr - angle) < Math.abs(prev - angle) ? curr : prev);
-    });
-    const soundIndex = soundStops.indexOf(closestStop);
-    
-    knob.style.transform = `rotate(${closestStop}deg)`;
-    currentSound = sounds[soundIndex];
-    
-    soundLabels.forEach((label, index) => {
-        label.classList.toggle('active', index === soundIndex);
+function updateSoundByIndex(index) {
+    // Update state
+    currentSoundIndex = index;
+    currentSound = sounds[currentSoundIndex];
+    const angle = soundStops[currentSoundIndex];
+
+    // Update visuals
+    knob.style.transform = `rotate(${angle}deg)`;
+    soundLabels.forEach((label, i) => {
+        label.classList.toggle('active', i === currentSoundIndex);
     });
 }
 
-knob.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    knob.style.transition = 'none';
-});
-
-document.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
+// Knob Click Logic
+knob.addEventListener('click', (e) => {
     const rect = knob.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * 180 / Math.PI + 90;
+    const isRightSide = e.clientX > rect.left + rect.width / 2;
     
-    currentAngle = angle;
-    updateSound(currentAngle);
-});
-
-document.addEventListener('mouseup', () => {
-    if (isDragging) {
-        isDragging = false;
-        knob.style.transition = '';
-        updateSound(currentAngle); // Snap to closest sound
+    if (isRightSide) {
+        currentSoundIndex = (currentSoundIndex + 1) % sounds.length;
+    } else {
+        currentSoundIndex = (currentSoundIndex - 1 + sounds.length) % sounds.length;
     }
+    
+    updateSoundByIndex(currentSoundIndex);
 });
 
 // Sound Label Click Logic
 soundLabels.forEach((label, index) => {
     label.addEventListener('click', () => {
-        currentAngle = soundStops[index];
-        knob.style.transition = 'transform 0.3s ease-out'; // Animate the snap
-        updateSound(currentAngle);
-        // Remove transition after animation so it doesn't affect dragging
-        setTimeout(() => {
-            knob.style.transition = '';
-        }, 300);
+        updateSoundByIndex(index);
     });
 });
 
@@ -390,4 +371,4 @@ octaveToggleOptions.forEach(option => {
 
 // Initial draw
 drawKeyboard(1);
-updateSound(currentAngle);
+updateSoundByIndex(0);
