@@ -36,7 +36,7 @@ const soundProfiles = {
     filterType: "lowpass",
     filterFreq: 2500,
     filterQ: 5,
-    setup: (osc) => {
+    setup: (osc, filter, gain, velocity) => {
       osc.detune.value = Math.random() * 10 - 5;
       const osc2 = ctx.createOscillator();
       osc2.type = "square";
@@ -363,6 +363,19 @@ document.addEventListener('mouseup', () => {
         knob.style.transition = '';
         updateSound(currentAngle); // Snap to closest sound
     }
+});
+
+// Sound Label Click Logic
+soundLabels.forEach((label, index) => {
+    label.addEventListener('click', () => {
+        currentAngle = soundStops[index];
+        knob.style.transition = 'transform 0.3s ease-out'; // Animate the snap
+        updateSound(currentAngle);
+        // Remove transition after animation so it doesn't affect dragging
+        setTimeout(() => {
+            knob.style.transition = '';
+        }, 300);
+    });
 });
 
 // Octave Toggle Logic
