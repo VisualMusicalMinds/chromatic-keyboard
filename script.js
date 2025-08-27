@@ -369,6 +369,7 @@ octaveToggleOptions.forEach(option => {
     });
 });
 
+
 // Initial draw
 drawKeyboard(1);
 updateSoundByIndex(0);
