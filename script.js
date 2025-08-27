@@ -269,8 +269,9 @@ function drawKeyboard(numOctaves = 1) {
 }
 
 // -------- INTERACTION --------
-function pressVisual(note, pressed) {
-  const el = document.querySelector(`[data-note="${note}"]`);
+function pressVisual(note, pressed, octaveOffset = 0) {
+  const finalNote = note.slice(0,-1) + (parseInt(note.at(-1), 10) + octaveOffset);
+  const el = document.querySelector(`[data-note="${finalNote}"]`);
   if (el) el.classList.toggle('pressed', pressed);
 }
 
@@ -284,9 +285,10 @@ document.addEventListener('keydown', (e) => {
   const note = keyToNote(key);
   if (!note) return;
   if (ctx.state !== 'running') ctx.resume();
+  const octaveOffset = isShifted ? 2 : 0;
   downKeys.set(e.code, { note, shifted: isShifted });
-  pressVisual(note, true);
-  startNote(note, 0.35, isShifted ? 2 : 0);
+  pressVisual(note, true, octaveOffset);
+  startNote(note, 0.35, octaveOffset);
 });
 
 document.addEventListener('keyup', (e) => {
@@ -294,7 +296,8 @@ document.addEventListener('keyup', (e) => {
   if (!downKeyInfo) return;
   downKeys.delete(e.code);
   const { note, shifted } = downKeyInfo;
-  pressVisual(note, false);
+  const octaveOffset = shifted ? 2 : 0;
+  pressVisual(note, false, octaveOffset);
   stopNote(note, shifted ? 2 : 0);
 });
 
@@ -303,11 +306,13 @@ window.addEventListener('keydown', e => { if (e.key === 'CapsLock') capsLock = !
 
 function onPointerDown(note) {
   if (ctx.state !== 'running') ctx.resume();
-  pressVisual(note, true);
-  startNote(note, 0.35, capsLock ? 2 : 0);
+  const octaveOffset = capsLock ? 2 : 0;
+  pressVisual(note, true, octaveOffset);
+  startNote(note, 0.35, octaveOffset);
 }
 function onPointerUp(note) {
-  pressVisual(note, false);
+  const octaveOffset = capsLock ? 2 : 0;
+  pressVisual(note, false, octaveOffset);
   stopNote(note, capsLock ? 2 : 0);
 }
 
@@ -319,7 +324,7 @@ const octaveToggleOptions = document.querySelectorAll('.toggle-option');
 // Sound Knob Logic
 let isDragging = false;
 let currentAngle = -120; // Initial angle (10 o'clock)
-const soundStops = [-120, -40, 40, 120]; // Angles for 10, 11, 1, 2 o'clock
+const soundStops = [-120, -156, 156, 120]; // Piano (8), Synth (34), Organ (26), Cosmic (4)
 const sounds = ["piano", "synth", "organ", "cosmic"];
 
 function updateSound(angle) {
@@ -348,8 +353,7 @@ document.addEventListener('mousemove', (e) => {
     const centerY = rect.top + rect.height / 2;
     const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * 180 / Math.PI + 90;
     
-    // Clamp angle between -120 (10 o'clock) and 120 (2 o'clock)
-    currentAngle = Math.max(-120, Math.min(120, angle));
+    currentAngle = angle;
     updateSound(currentAngle);
 });
 
