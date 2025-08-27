@@ -51,6 +51,7 @@ body {
   position: relative;
   cursor: pointer;
   transform: rotate(-120deg); /* Start at 10 o'clock */
+  transition: transform 0.3s ease-out;
 }
 
 .knob::after {
