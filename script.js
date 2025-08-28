@@ -1,30 +1,54 @@
 // -------- AUDIO (pleasant tone, click-free) --------
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 const ctx = new AudioCtx();
+const MAX_POLYPHONY = 16;
 
-// Single shared compressor (prevents pops, evens levels)
+// Master audio chain
+const mixBus = ctx.createGain();
+const masterHP = ctx.createBiquadFilter();
+const masterLP = ctx.createBiquadFilter();
 const compressor = ctx.createDynamicsCompressor();
+const masterGain = ctx.createGain();
+
+// Configure master chain
+mixBus.gain.value = 0.8; // Headroom for mixing
+
+masterHP.type = 'highpass';
+masterHP.frequency.value = 100; // Remove rumble
+
+masterLP.type = 'lowpass';
+masterLP.frequency.value = 10000; // Tame harsh highs
+
+// Polite compressor settings from spec
 compressor.threshold.value = -24;
 compressor.knee.value = 30;
-compressor.ratio.value = 12;
-compressor.attack.value = 0.003;
+compressor.ratio.value = 4;
+compressor.attack.value = 0.01;
 compressor.release.value = 0.25;
-compressor.connect(ctx.destination);
+
+masterGain.gain.value = 0.9; // Final master volume
+
+// Connect the chain
+mixBus.connect(masterHP);
+masterHP.connect(masterLP);
+masterLP.connect(compressor);
+compressor.connect(masterGain);
+masterGain.connect(ctx.destination);
 
 const active = new Map(); // note -> {osc, gain, filter}
-let currentSound = "piano"; // Default sound
+let currentSound = "keyboard"; // Default sound
 
 // Sound profiles
 const soundProfiles = {
-  piano: {
+  keyboard: {
     oscillator: "triangle",
-    attack: 0.012,
-    decay: 0.06,
-    sustain: 0.26,
-    release: 0.18,
+    attack: 0.02,
+    decay: 0.1,
+    sustain: 0.2,
+    release: 0.2,
     filterType: "lowpass",
-    filterFreq: 5200,
-    filterQ: 0.8,
+    filterFreq: 4000,
+    filterQ: 1,
     setup: () => {}
   },
   synth: {
@@ -79,7 +103,8 @@ const soundProfiles = {
     attack: 0.1,
     decay: 0.4,
     sustain: 0.4,
-    release: 2.0,
+    release: 1.0, // Shorter release
+    gainMultiplier: 2.5, // Boost the gain
     filterType: "bandpass",
     filterFreq: 1000,
     filterQ: 4,
@@ -88,18 +113,26 @@ const soundProfiles = {
       const lfoGain = ctx.createGain();
       lfo.frequency.value = 5 + Math.random() * 3;
       lfoGain.gain.value = 100;
-      lfo.connect(lfoGain);
-      lfoGain.connect(filter.frequency);
+      lfo.connect(lfoGain).connect(filter.frequency);
       lfo.start();
+
+      // Create a send to the delay effect
       const delay = ctx.createDelay();
       const delayFeedback = ctx.createGain();
+      const wetGain = ctx.createGain();
+      
       delay.delayTime.value = 0.4;
       delayFeedback.gain.value = 0.3;
-      gain.connect(delay);
-      delay.connect(delayFeedback);
-      delayFeedback.connect(delay);
-      delay.connect(compressor);
-      return { lfo, delay };
+      wetGain.gain.value = 0.8; // Control the amount of send
+
+      // The main signal path is unaffected: osc -> filter -> gain -> mixBus
+      // We create a parallel path for the delay: filter -> wetGain -> delay -> mixBus
+      filter.connect(wetGain);
+      wetGain.connect(delay);
+      delay.connect(delayFeedback).connect(delay);
+      delay.connect(mixBus);
+
+      return { lfo, delay, wetGain }; // Return nodes to be stopped
     }
   }
 };
@@ -118,9 +151,14 @@ function freqOf(note, octaveOffset = 0) {
   return 440 * Math.pow(2, (noteNum - A4num) / 12);
 }
 
-function startNote(note, velocity = 0.35, octaveOffset = 0) {
+function startNote(note, velocity = 0.2, octaveOffset = 0) {
   const finalNote = note.slice(0,-1) + (parseInt(note.at(-1), 10) + octaveOffset);
   if (active.has(finalNote)) return;
+
+  if (active.size >= MAX_POLYPHONY) {
+    const oldestNote = active.keys().next().value;
+    stopNote(oldestNote);
+  }
 
   const profile = soundProfiles[currentSound];
   const osc = ctx.createOscillator();
@@ -133,22 +171,23 @@ function startNote(note, velocity = 0.35, octaveOffset = 0) {
   filter.frequency.value = profile.filterFreq;
   filter.Q.value = profile.filterQ;
 
+  const finalVelocity = (velocity * (profile.gainMultiplier || 1.0));
+
   const now = ctx.currentTime;
   const A = profile.attack, D = profile.decay, S = profile.sustain;
   gain.gain.cancelScheduledValues(now);
   gain.gain.setValueAtTime(0.0, now);
-  gain.gain.linearRampToValueAtTime(velocity, now + A);
-  gain.gain.linearRampToValueAtTime(S * velocity, now + A + D);
+  gain.gain.linearRampToValueAtTime(finalVelocity, now + A);
+  gain.gain.linearRampToValueAtTime(S * finalVelocity, now + A + D);
 
-  osc.connect(filter).connect(gain).connect(compressor);
+  osc.connect(filter).connect(gain).connect(mixBus);
   osc.start(now);
 
   const additionalNodes = profile.setup ? profile.setup(osc, filter, gain, velocity) : {};
   active.set(finalNote, { osc, gain, filter, ...additionalNodes });
 }
 
-function stopNote(note, octaveOffset = 0) {
-  const finalNote = note.slice(0,-1) + (parseInt(note.at(-1), 10) + octaveOffset);
+function stopNote(finalNote) {
   const node = active.get(finalNote);
   if (!node) return;
 
@@ -158,12 +197,14 @@ function stopNote(note, octaveOffset = 0) {
   const R = profile.release;
 
   gain.gain.cancelScheduledValues(now);
-  gain.gain.setTargetAtTime(0.0001, now, R / 3);
+  gain.gain.setValueAtTime(gain.gain.value, now);
+  gain.gain.linearRampToValueAtTime(0, now + R);
   osc.stop(now + R + 0.02);
 
   if (node.additionalOsc) node.additionalOsc.stop(now + R + 0.02);
   if (node.additionalOscs) node.additionalOscs.forEach(o => o.stop(now + R + 0.02));
   if (node.lfo) node.lfo.stop(now + R + 0.02);
+  if (node.wetGain) node.wetGain.gain.linearRampToValueAtTime(0, now + R);
 
   active.delete(finalNote);
 }
@@ -288,7 +329,7 @@ document.addEventListener('keydown', (e) => {
   const octaveOffset = isShifted ? 2 : 0;
   downKeys.set(e.code, { note, shifted: isShifted });
   pressVisual(note, true, octaveOffset);
-  startNote(note, 0.35, octaveOffset);
+  startNote(note, 0.2, octaveOffset);
 });
 
 document.addEventListener('keyup', (e) => {
@@ -298,7 +339,8 @@ document.addEventListener('keyup', (e) => {
   const { note, shifted } = downKeyInfo;
   const octaveOffset = shifted ? 2 : 0;
   pressVisual(note, false, octaveOffset);
-  stopNote(note, shifted ? 2 : 0);
+  const finalNote = note.slice(0,-1) + (parseInt(note.at(-1), 10) + octaveOffset);
+  stopNote(finalNote);
 });
 
 let capsLock = false;
@@ -308,12 +350,13 @@ function onPointerDown(note) {
   if (ctx.state !== 'running') ctx.resume();
   const octaveOffset = capsLock ? 2 : 0;
   pressVisual(note, true, octaveOffset);
-  startNote(note, 0.35, octaveOffset);
+  startNote(note, 0.2, octaveOffset);
 }
 function onPointerUp(note) {
   const octaveOffset = capsLock ? 2 : 0;
   pressVisual(note, false, octaveOffset);
-  stopNote(note, capsLock ? 2 : 0);
+  const finalNote = note.slice(0,-1) + (parseInt(note.at(-1), 10) + octaveOffset);
+  stopNote(finalNote);
 }
 
 // -------- NEW CONTROLS --------
@@ -321,8 +364,8 @@ const knob = document.querySelector('.knob');
 const soundLabels = document.querySelectorAll('.sound-labels span');
 const octaveToggleOptions = document.querySelectorAll('.toggle-option');
 
-const soundStops = [-120, -156, 156, 120]; // Piano (8), Synth (34), Organ (26), Cosmic (4)
-const sounds = ["piano", "synth", "organ", "cosmic"];
+const soundStops = [-120, -156, 156, 120]; // keyboard (8), Synth (34), Organ (26), Cosmic (4)
+const sounds = ["keyboard", "synth", "organ", "cosmic"];
 let currentSoundIndex = 0;
 
 function updateSoundByIndex(index) {
