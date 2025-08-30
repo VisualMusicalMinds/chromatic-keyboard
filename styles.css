@@ -20,14 +20,17 @@ body {
 .controls-container {
   display: flex;
   justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
   margin-bottom: 20px;
   width: 100%;
   max-width: 500px;
   height: auto;
-  padding-bottom: 20px;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
-.main-controls {
+.instrument-controls {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -173,53 +176,42 @@ body {
 .toggle-grid-control {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px 12px;
+  gap: 10px;
+  padding: 10px;
   background: #2c2c2e;
-  padding: 12px;
   border-radius: 18px;
   box-shadow: inset 0 2px 5px rgba(0,0,0,0.4);
-  width: 240px;
-  box-sizing: border-box;
 }
 
-.toggle-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 4px 0;
-}
-
-.toggle-label {
-  font-weight: bold;
-  color: #ccc;
-  font-size: 14px;
-  user-select: none;
-}
-
-.toggle-indicator {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
+.toggle-btn {
   background-color: #48484a;
   border: 1px solid #1c1c1e;
-  transition: background-color 0.2s, box-shadow 0.2s;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 14px;
   cursor: pointer;
+  transition: all 0.2s;
   box-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
-.toggle-indicator:hover {
+.toggle-btn:hover {
   border-color: #aaa;
 }
 
-.toggle-indicator.t-green {
+.toggle-btn.t-green {
   background-color: #34C759;
-  box-shadow: 0 0 8px #34C759;
+  border-color: #2ca349;
+  text-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
-.toggle-indicator.t-yellow {
+.toggle-btn.t-yellow {
   background-color: #FFCC00;
-  box-shadow: 0 0 8px #FFCC00;
+  border-color: #d8ad00;
+  text-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
-.toggle-indicator.t-blue {
+.toggle-btn.t-blue {
   background-color: #007AFF;
-  box-shadow: 0 0 8px #007AFF;
+  border-color: #0062cc;
+  text-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
