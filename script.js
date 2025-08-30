@@ -322,7 +322,7 @@ function drawKeyboard(numOctaves = 1) {
         div.style.backgroundColor = '#fff';
       }
       
-      if (namesMode !== 'deactivated') {
+      if (namesMode === 't-yellow' || namesMode === 't-green') {
         const label = document.createElement('div');
         label.className = 'key-label';
         label.textContent = noteName;
