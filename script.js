@@ -623,11 +623,12 @@ function getNoteMapping(key, layout, octaves, isShifted) {
         noteToPlay = `${note}${octave}`;
         
         let lightUpOctave;
-        const lowerKeys = ['q', '2', 'w', '3', 'e'];
-        if (lowerKeys.includes(key)) {
-            lightUpOctave = 3; // Force these keys to light up the lower octave
+        const upperVisualKeys = [',', 'l', '.', ';', '/', 'i', '9', 'o', '0', 'p'];
+        
+        if (upperVisualKeys.includes(key)) {
+            lightUpOctave = 4;
         } else {
-            lightUpOctave = Math.min(octave, 4); // Use existing logic for all other keys
+            lightUpOctave = 3; // Default for all other keys
         }
         noteToLightUp = `${note}${lightUpOctave}`;
 
