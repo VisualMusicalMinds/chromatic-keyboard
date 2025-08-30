@@ -475,9 +475,6 @@ function regenerateKeyData(basePitch, noteSequence) {
     return newKeyData;
 }
 
-
-populateDynamicBindings();
-
 function formatBinding(bindingString) {
     const chars = bindingString.split('');
     if (chars.length === 4) {
