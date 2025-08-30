@@ -209,6 +209,26 @@ function stopNote(finalNote) {
   active.delete(finalNote);
 }
 
+const noteColors = {
+  'C': '#FF3B30',
+  'D': '#FF9500',
+  'E': '#FFCC00',
+  'F': '#34C759',
+  'G': '#30c0c6',
+  'A': '#007AFF',
+  'B': '#AF52DE'
+};
+
+const noteLightColors = {
+  'C': '#FFD1D1',
+  'D': '#FFEBD6',
+  'E': '#FFF5CC',
+  'F': '#D6F5DD',
+  'G': '#D5F2F3',
+  'A': '#CCE5FF',
+  'B': '#EEDCFA'
+};
+
 // -------- LAYOUT --------
 const whitesEl = document.getElementById('whites');
 const blacksEl = document.getElementById('blacks');
@@ -284,6 +304,10 @@ function drawKeyboard(numOctaves = 1) {
       div.className = 'white-key';
       div.style.left = `${i * whiteKeyWidth}px`;
       div.dataset.note = note;
+      const noteName = note.slice(0, -1);
+      if (noteLightColors[noteName]) {
+        div.style.backgroundColor = noteLightColors[noteName];
+      }
       whitesEl.appendChild(div);
       div.addEventListener('mousedown', () => onPointerDown(note));
       div.addEventListener('mouseup', () => onPointerUp(note));
@@ -313,7 +337,14 @@ function drawKeyboard(numOctaves = 1) {
 function pressVisual(note, pressed, octaveOffset = 0) {
   const finalNote = note.slice(0,-1) + (parseInt(note.at(-1), 10) + octaveOffset);
   const el = document.querySelector(`[data-note="${finalNote}"]`);
-  if (el) el.classList.toggle('pressed', pressed);
+  if (!el) return;
+
+  el.classList.toggle('pressed', pressed);
+
+  const noteName = finalNote.slice(0, -1);
+  if (noteColors[noteName] && noteLightColors[noteName]) {
+    el.style.backgroundColor = pressed ? noteColors[noteName] : noteLightColors[noteName];
+  }
 }
 
 const downKeys = new Map();
