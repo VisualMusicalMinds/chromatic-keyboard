@@ -158,6 +158,26 @@ body {
 }
 .black-key.pressed { /* Style overridden by JS */ }
 
-.label {
-  display: none; /* Remove text from keys */
+.key-label {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  pointer-events: none;
+  user-select: none;
+}
+
+.white-key .key-label {
+  font-size: calc(var(--white-w) / 3);
+}
+
+.black-key .key-label {
+  font-size: calc(var(--black-w) / 2.5);
+  text-align: center;
+  line-height: 1.1;
+  bottom: 6px;
 }
