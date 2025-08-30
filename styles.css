@@ -133,16 +133,15 @@ body {
   width: var(--white-w);
   height: var(--white-h);
   left: 0; top: 0;
-  background: linear-gradient(#fff, #ddd);
   border: 1px solid #999;
-  border-bottom: 3px solid #bbb;
   border-radius: 6px 6px 10px 10px;
-  box-shadow: inset 0 -2px 0 #ccc;
   user-select: none;
   cursor: pointer;
   z-index: 1;
 }
-.white-key.pressed { background: linear-gradient(#f2f2f2, #cfcfcf); }
+.white-key.pressed {
+  border-bottom: 1px solid #999;
+}
 
 .black-key {
   position: absolute;
