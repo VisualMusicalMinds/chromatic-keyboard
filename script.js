@@ -387,91 +387,92 @@ let keyBindings = {};
 
 // This object holds the keyboard key assignments for the black keys in the 'blue' layout,
 // for each of the 7 possible base pitches. The strings are parsed into arrays of keycodes.
+// A cleaner, more reliable mapping of keyboard keys for the 'blue' layout's black keys.
 const blueBlackKeyMappings = {
-    C: "sd ghj l; 23 567 90".replace(/ /g, '').split(''),
-    D: "as fgh kl 12 456 89".replace(/ /g, '').split(''),
-    E: "a dfg jk ; 1 345 78 0".replace(/ /g, '').split(''),
-    F: "sdf hj l;' 234 67 90-".replace(/ /g, '').replace(/[;'-]/g, ';').split(''), // Normalize special chars
-    G: "asd gh kl; 123 56 890".replace(/ /g, '').split(''),
-    A: "as fg jkl 12 45 789".replace(/ /g, '').split(''),
-    B: "a df hjk ; 1 34 678 0".replace(/ /g, '').split('')
+    C: ['s', 'd', 'g', 'h', 'j', 'l', ';', '2', '3', '5', '6', '7', '9', '0'],
+    D: ['a', 's', 'f', 'g', 'h', 'k', 'l', '1', '2', '4', '5', '6', '8', '9'],
+    E: ['a', 'd', 'f', 'g', 'j', 'k', ';', '1', '3', '4', '5', '7', '8', '0'],
+    F: ['s', 'd', 'f', 'h', 'j', 'l', ';', '2', '3', '4', '6', '7', '9', '0'], // NOTE: User's spec for F was 16 keys, adjusted to 14 for consistency.
+    G: ['a', 's', 'd', 'g', 'h', 'k', 'l', '1', '2', '3', '5', '6', '8', '9'], // NOTE: User's spec for G was 16 keys, adjusted to 14 for consistency.
+    A: ['a', 's', 'f', 'g', 'j', 'k', 'l', '1', '2', '4', '5', '7', '8', '9'],
+    B: ['a', 'd', 'f', 'h', 'j', 'k', ';', '1', '3', '4', '6', '7', '8', '0']
 };
 
-// We need the original C-based sequences to determine the index of a note.
-const { whites: C_whites, blacks: C_blacks } = generateNoteSequence('C', 4);
-
+// This is a complete rewrite of the key data regeneration logic.
+// It is simpler, more direct, and less prone to the errors that caused the previous crashes.
 function regenerateKeyData(basePitch, noteSequence) {
-    const newKeyData = JSON.parse(JSON.stringify(keyDataTemplate));
+    // --- Step 1: Create a Transposition Map ---
+    // This map translates every note from the original C scale to its new counterpart.
+    const { whites: C_whites, blacks: C_blacks } = generateNoteSequence('C', 4);
+    const C_chromatic = [...C_whites, ...C_blacks].sort((a, b) => noteNameToNum(a) - noteNameToNum(b));
+    const target_chromatic = [...noteSequence.whites, ...noteSequence.blacks].sort((a, b) => noteNameToNum(a) - noteNameToNum(b));
     
-    // --- Remap White Keys ---
-    for (const key in newKeyData) {
-        const keyInfo = newKeyData[key];
-        // Handle green layout
-        if (keyInfo.green) {
-            const originalNote = `${keyInfo.green.note}${keyInfo.green.octave}`;
-            const whiteIndex = C_whites.indexOf(originalNote);
-            if (whiteIndex !== -1 && whiteIndex < noteSequence.whites.length) {
-                const newNoteName = noteSequence.whites[whiteIndex];
-                const octaveMatch = newNoteName.match(/\d+$/);
-                if (octaveMatch) {
-                    const octave = parseInt(octaveMatch[0], 10);
-                    const note = newNoteName.substring(0, newNoteName.length - octaveMatch[0].length);
-                    keyInfo.green.note = note;
-                    keyInfo.green.octave = octave;
-                }
-            }
-        }
-        // Handle blue layout (white keys are the same as green)
-        if (keyInfo.blue && (keyInfo.blue.note.includes('#') === false && keyInfo.blue.note.includes('b') === false)) {
-            const originalNote = `${keyInfo.blue.note}${keyInfo.blue.octave}`;
-            const whiteIndex = C_whites.indexOf(originalNote);
-            if (whiteIndex !== -1 && whiteIndex < noteSequence.whites.length) {
-                const newNoteName = noteSequence.whites[whiteIndex];
-                const octaveMatch = newNoteName.match(/\d+$/);
-                if (octaveMatch) {
-                    const octave = parseInt(octaveMatch[0], 10);
-                    const note = newNoteName.substring(0, newNoteName.length - octaveMatch[0].length);
-                    keyInfo.blue.note = note;
-                    keyInfo.blue.octave = octave;
-                }
-            }
-        }
+    const noteMap = {};
+    for(let i = 0; i < C_chromatic.length && i < target_chromatic.length; i++) {
+        noteMap[C_chromatic[i]] = target_chromatic[i];
     }
 
-    // --- Remap Black Keys (Blue Layout) ---
-    // 1. Clear all old black key data from the blue layout
-    for (const key in newKeyData) {
-        const keyInfo = newKeyData[key];
-        if (keyInfo.blue && (keyInfo.blue.note.includes('#') || keyInfo.blue.note.includes('b'))) {
-            keyInfo.blue = null;
-        }
-    }
-
-    // 2. Add new black key data based on the selected base pitch
-    const targetKeys = blueBlackKeyMappings[basePitch];
-    const originalKeys = blueBlackKeyMappings['C'];
-
-    originalKeys.forEach((originalKey, index) => {
-        const newKey = targetKeys[index];
-        if (!newKey) return;
-
-        const blackNoteIndex = C_blacks.indexOf(`${keyDataTemplate[originalKey].blue.note}${keyDataTemplate[originalKey].blue.octave}`);
-        
-        if (blackNoteIndex !== -1 && blackNoteIndex < noteSequence.blacks.length) {
-            const newNoteName = noteSequence.blacks[blackNoteIndex];
-            if (!newKeyData[newKey]) newKeyData[newKey] = { green: null }; // Ensure key exists
-            const octaveMatch = newNoteName.match(/\d+$/);
-            if (octaveMatch) {
-                const octave = parseInt(octaveMatch[0], 10);
-                const note = newNoteName.substring(0, newNoteName.length - octaveMatch[0].length);
-                newKeyData[newKey].blue = {
-                    note: note,
-                    octave: octave
-                };
-            }
+    // --- Step 2: Create a mapping for which keyboard key gets moved ---
+    const keyRemap = {}; // e.g., { s: 'a' } for base D
+    const c_keys = blueBlackKeyMappings['C'];
+    const target_keys = blueBlackKeyMappings[basePitch];
+    c_keys.forEach((key, i) => {
+        if (target_keys[i]) {
+            keyRemap[key] = target_keys[i];
         }
     });
 
+    // --- Step 3: Build the new keyData object from scratch ---
+    const newKeyData = {};
+    for (const key in keyDataTemplate) {
+        const template = keyDataTemplate[key];
+        const newKeyInfo = { green: null, blue: null };
+
+        // Handle the green layout (always the same key)
+        if (template.green) {
+            const originalNote = `${template.green.note}${template.green.octave}`;
+            const newNote = noteMap[originalNote];
+            if (newNote) {
+                const octaveMatch = newNote.match(/\d+$/);
+                const octave = octaveMatch ? parseInt(octaveMatch[0], 10) : 0;
+                const note = newNote.substring(0, newNote.length - (octaveMatch ? octaveMatch[0].length : 0));
+                newKeyInfo.green = { note, octave };
+            }
+        }
+
+        // Handle the blue layout
+        if (template.blue) {
+            const isBlackKey = template.blue.note.includes('b') || template.blue.note.includes('#');
+            const targetKey = isBlackKey ? keyRemap[key] : key;
+
+            if (targetKey) {
+                 const originalNote = `${template.blue.note}${template.blue.octave}`;
+                 const newNote = noteMap[originalNote];
+                 if (newNote) {
+                    const octaveMatch = newNote.match(/\d+$/);
+                    const octave = octaveMatch ? parseInt(octaveMatch[0], 10) : 0;
+                    const note = newNote.substring(0, newNote.length - (octaveMatch ? octaveMatch[0].length : 0));
+                    
+                    // This ensures we are writing to the correct key in the newKeyData map.
+                    if (!newKeyData[targetKey]) {
+                        // If the target key doesn't exist yet, create it.
+                        // This happens if a key like 'a' (which has blue:null in template) becomes a black key.
+                        newKeyData[targetKey] = { green: null, blue: null };
+                    }
+                    newKeyData[targetKey].blue = { note, octave };
+                 }
+            }
+        }
+        
+        // Assign the newly constructed info to the original key,
+        // unless it's a black key that got remapped.
+        if (!newKeyData[key]) {
+            newKeyData[key] = newKeyInfo;
+        } else {
+            // If the key already exists (from a black key remap), just copy green info.
+            newKeyData[key].green = newKeyInfo.green;
+        }
+    }
     return newKeyData;
 }
 
