@@ -505,6 +505,12 @@ function getNoteMapping(key, layout, octaves, isShifted) {
         noteToPlay = `${note}${startOctave + octaveOffset}`;
         noteToLightUp = `${note}${startOctave}`;
 
+        // Override for special keys
+        const specialKey = getSpecialKeyInfo(key);
+        if (specialKey) {
+            noteToLightUp = `${specialKey.note}4`;
+        }
+
     } else { // Blue layout
         noteToPlay = `${note}${octave}`;
         noteToLightUp = `${note}${startOctave}`;
@@ -529,6 +535,16 @@ function getNoteMapping(key, layout, octaves, isShifted) {
         }
         noteToLightUp = `${note}${lightOctave}`;
 
+        // Override for special keys
+        const specialKey = getSpecialKeyInfo(key);
+        if (specialKey) {
+            if (specialKey.group === 'comma' || specialKey.group === 'i') {
+                noteToLightUp = `${specialKey.note}4`;
+            } else { // k or 8 group
+                noteToLightUp = `${specialKey.note}5`;
+            }
+        }
+
     } else { // Blue layout
         noteToPlay = `${note}${octave}`;
         noteToLightUp = noteToPlay;
@@ -548,6 +564,25 @@ function getKeyRow(key) {
     if ('qwertyuiop'.includes(key)) return 'q';
     if ('1234567890'.includes(key)) return '1';
     return null;
+}
+
+const specialKeyGroups = {
+    ',': { group: 'comma', note: 'C'},
+    '.': { group: 'comma', note: 'D'},
+    '/': { group: 'comma', note: 'E'},
+    'k': { group: 'k', note: 'C'},
+    'l': { group: 'k', note: 'D'},
+    ';': { group: 'k', note: 'E'},
+    'i': { group: 'i', note: 'C'},
+    'o': { group: 'i', note: 'D'},
+    'p': { group: 'i', note: 'E'},
+    '8': { group: '8', note: 'C'},
+    '9': { group: '8', note: 'D'},
+    '0': { group: '8', note: 'E'},
+};
+
+function getSpecialKeyInfo(key) {
+    return specialKeyGroups[key] || null;
 }
 
 document.addEventListener('keydown', (e) => {
@@ -583,16 +618,14 @@ window.addEventListener('keydown', e => { if (e.key === 'CapsLock') capsLock = !
 
 function onPointerDown(note) {
   if (ctx.state !== 'running') ctx.resume();
-  const octaveOffset = capsLock ? 2 : 0;
-  const finalNote = note.slice(0,-1) + (parseInt(note.at(-1), 10) + octaveOffset);
-  pressVisual(finalNote, true);
-  startNote(finalNote, 0.2);
+  // Per user instruction, mouse clicks ignore modifiers and play the note as-is.
+  pressVisual(note, true);
+  startNote(note, 0.2);
 }
 function onPointerUp(note) {
-  const octaveOffset = capsLock ? 2 : 0;
-  const finalNote = note.slice(0,-1) + (parseInt(note.at(-1), 10) + octaveOffset);
-  pressVisual(finalNote, false);
-  stopNote(finalNote);
+  // Per user instruction, mouse clicks ignore modifiers.
+  pressVisual(note, false);
+  stopNote(note);
 }
 
 // -------- NEW CONTROLS --------
