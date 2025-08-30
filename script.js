@@ -596,9 +596,10 @@ function getNoteMapping(key, layout, octaves, isShifted) {
   if (octaves >= 3) {
     if (layout === 't-blue' && isShifted) {
       noteToPlay = `${note}${octave + 2}`;
+      noteToLightUp = noteToPlay;
     }
-    // For this mode, the key you light up is the one you play,
-    // unless shifted in blue mode.
+    // For this mode, the key you light up is the one you play.
+    // If shifted in blue mode, both sound and visual are moved up.
     return { noteToPlay, noteToLightUp };
   }
 
