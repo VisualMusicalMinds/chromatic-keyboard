@@ -297,6 +297,83 @@ const keyData = {
   '/': { green: { note: 'E', octave: 4 }, blue: { note: 'E', octave: 4 } },
 };
 
+const keyBindings = {
+  't-green': {
+    1: {
+      'C3': 'zaq1', 'D3': 'xsw2', 'E3': 'cde3', 'F3': 'vfr4', 'G3': 'bgt5', 'A3': 'nhy6', 'B3': 'mju7',
+      'C4': ',ki8', 'D4': '.lo9', 'E4': '/;p0'
+    },
+    2: {
+      'C3': 'zq', 'D3': 'xw', 'E3': 'ce', 'F3': 'vr', 'G3': 'bt', 'A3': 'ny', 'B3': 'mu',
+      'C4': ',ai1', 'D4': '.so2', 'E4': '/dp3',
+      'F4': 'f4', 'G4': 'g5', 'A4': 'h6', 'B4': 'j7',
+      'C5': 'k8', 'D5': 'l9', 'E5': ';0'
+    },
+    3: {}, 4: {}
+  },
+  't-blue': {
+    1: {
+      'C3': 'zq', 'Db3': 's2', 'D3': 'xw', 'Eb3': 'd3', 'E3': 'ce', 'F3': 'vr', 'Gb3': 'g5', 'G3': 'bt', 'Ab3': 'h6', 'A3': 'ny', 'Bb3': 'j7', 'B3': 'mu',
+      'C4': ',i', 'Db4': 'l9', 'D4': '.o', 'Eb4': ';0', 'E4': '/p'
+    },
+    2: {
+        'C3': 'z', 'Db3': 's', 'D3': 'x', 'Eb3': 'd', 'E3': 'c', 'F3': 'v', 'Gb3': 'g', 'G3': 'b', 'Ab3': 'h', 'A3': 'n', 'Bb3': 'j', 'B3': 'm',
+        'C4': ',q', 'Db4': 'l2', 'D4': '.w', 'Eb4': ';3', 'E4': '/e',
+        'F4': 'r', 'Gb4': 'g5', 'G4': 't', 'Ab4': 'h6', 'A4': 'y', 'Bb4': 'j7', 'B4': 'u',
+        'C5': 'i', 'Db5': '9', 'D5': 'o', 'Eb5': '0', 'E5': 'p'
+    },
+    3: {}, 4: {}
+  }
+};
+
+function populateDynamicBindings() {
+  // For modes 3 and 4, bindings are 1-to-1 with the lighting-up note.
+  for (let octaves = 3; octaves <= 4; octaves++) {
+    for (const layout of ['t-green', 't-blue']) {
+      const bindings = {};
+      for (const key in keyData) {
+        const keyInfo = (layout === 't-green') ? keyData[key].green : keyData[key].blue;
+        if (keyInfo) {
+          const note = `${keyInfo.note}${keyInfo.octave}`;
+          if (!bindings[note]) bindings[note] = '';
+          bindings[note] += key;
+        }
+      }
+      keyBindings[layout][octaves] = bindings;
+    }
+  }
+
+  // Special handling for blue layout shifted keys (adds 2 to octave)
+  for (let octaves = 1; octaves <= 4; octaves++) {
+    const bindings = keyBindings['t-blue'][octaves];
+    const shiftedBindings = {};
+    for (const key in keyData) {
+      const keyInfo = keyData[key].blue;
+      if (keyInfo) {
+        // Shifted notes for blue are octave + 2
+        const shiftedNote = `${keyInfo.note}${keyInfo.octave + 2}`;
+        const displayKey = key.toUpperCase();
+        if (!bindings[shiftedNote] && !shiftedBindings[shiftedNote]) {
+           shiftedBindings[shiftedNote] = '';
+        }
+        if(shiftedBindings[shiftedNote] !== undefined){
+            shiftedBindings[shiftedNote] += displayKey;
+        }
+      }
+    }
+    // Merge shifted bindings into the main blue bindings
+    for(const note in shiftedBindings){
+        if(bindings[note]){
+            bindings[note] += shiftedBindings[note];
+        } else {
+            bindings[note] = shiftedBindings[note];
+        }
+    }
+  }
+}
+
+populateDynamicBindings();
+
 function drawKeyboard(numOctaves = 1) {
   whitesEl.innerHTML = '';
   blacksEl.innerHTML = '';
@@ -305,6 +382,8 @@ function drawKeyboard(numOctaves = 1) {
   
   const colorMode = toggleStates.color[currentToggleStates.color];
   const namesMode = toggleStates.names[currentToggleStates.names];
+  const bindingsMode = toggleStates.bindings[currentToggleStates.bindings];
+  const layoutMode = toggleStates.layout[currentToggleStates.layout];
 
   const startOctave = 3;
     const noteOrder = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
@@ -381,6 +460,17 @@ function drawKeyboard(numOctaves = 1) {
 
         div.appendChild(label);
       }
+
+      if (bindingsMode !== 'deactivated') {
+        const binding = keyBindings[layoutMode]?.[numOctaves]?.[note];
+        if (binding) {
+          const bindingLabel = document.createElement('div');
+          bindingLabel.className = 'binding-label';
+          bindingLabel.textContent = binding;
+          div.appendChild(bindingLabel);
+        }
+      }
+
       whitesEl.appendChild(div);
       div.addEventListener('mousedown', () => onPointerDown(note));
       div.addEventListener('mouseup', () => onPointerUp(note));
@@ -407,6 +497,17 @@ function drawKeyboard(numOctaves = 1) {
         label.innerHTML = blackKeyDisplayMap[pc] || '';
         div.appendChild(label);
       }
+
+      if (bindingsMode !== 'deactivated') {
+        const binding = keyBindings[layoutMode]?.[numOctaves]?.[note];
+        if (binding) {
+          const bindingLabel = document.createElement('div');
+          bindingLabel.className = 'binding-label';
+          bindingLabel.textContent = binding;
+          div.appendChild(bindingLabel);
+        }
+      }
+
       blacksEl.appendChild(div);
       div.addEventListener('mousedown', () => onPointerDown(note));
       div.addEventListener('mouseup', () => onPointerUp(note));
@@ -497,12 +598,7 @@ function getNoteMapping(key, layout, octaves, isShifted) {
         const keyRow = getKeyRow(key);
         if (!keyRow) return null;
 
-        let octaveOffset = 0;
-        if (keyRow === 'a') octaveOffset = 1;
-        else if (keyRow === 'q') octaveOffset = 2;
-        else if (keyRow === '1') octaveOffset = 3;
-        
-        noteToPlay = `${note}${startOctave + octaveOffset}`;
+        noteToPlay = `${note}${octave}`; // Use the correct octave from keyData
         noteToLightUp = `${note}${startOctave}`;
 
         // Override for special keys
@@ -709,8 +805,8 @@ function setupToggles() {
           button.classList.add(newState);
         }
 
-        // If the color or names toggle was changed, redraw the keyboard
-        if (toggleName === 'color' || toggleName === 'names') {
+        // If the color, names, layout, or bindings toggle was changed, redraw the keyboard
+        if (toggleName === 'color' || toggleName === 'names' || toggleName === 'layout' || toggleName === 'bindings') {
           const activeOctaveEl = document.querySelector('.toggle-option.active');
           const numOctaves = activeOctaveEl ? parseInt(activeOctaveEl.dataset.octaves, 10) : 1;
           drawKeyboard(numOctaves);
