@@ -621,7 +621,8 @@ function getNoteMapping(key, layout, octaves, isShifted) {
 
     } else { // Blue layout
         noteToPlay = `${note}${octave}`;
-        noteToLightUp = `${note}${startOctave}`;
+        const lightUpOctave = Math.min(octave, 4); // Cap lighting at octave 4 for 1-octave view
+        noteToLightUp = `${note}${lightUpOctave}`;
         if (isShifted) {
             noteToPlay = `${note}${octave + 2}`;
         }
