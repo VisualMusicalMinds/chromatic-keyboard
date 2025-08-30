@@ -229,6 +229,14 @@ const noteLightColors = {
   'B': '#d099ea'
 };
 
+const blackNoteColors = {
+  'C#': '#ff6818', 'Db': '#ff6818',
+  'D#': '#ffb000', 'Eb': '#ffb000',
+  'F#': '#32c490', 'Gb': '#32c490',
+  'G#': '#189de2', 'Ab': '#189de2',
+  'A#': '#5866ee', 'Bb': '#5866ee'
+};
+
 // -------- LAYOUT --------
 const whitesEl = document.getElementById('whites');
 const blacksEl = document.getElementById('blacks');
@@ -342,8 +350,23 @@ function pressVisual(note, pressed, octaveOffset = 0) {
   el.classList.toggle('pressed', pressed);
 
   const noteName = finalNote.slice(0, -1);
-  if (noteColors[noteName] && noteLightColors[noteName]) {
-    el.style.backgroundColor = pressed ? noteColors[noteName] : noteLightColors[noteName];
+
+  // Handle white keys
+  if (el.classList.contains('white-key')) {
+    if (noteColors[noteName] && noteLightColors[noteName]) {
+      el.style.backgroundColor = pressed ? noteColors[noteName] : noteLightColors[noteName];
+    }
+  }
+  // Handle black keys
+  else if (el.classList.contains('black-key')) {
+    if (pressed) {
+      if (blackNoteColors[noteName]) {
+        el.style.background = blackNoteColors[noteName];
+      }
+    } else {
+      // Reset to original gradient by clearing the inline style
+      el.style.background = '';
+    }
   }
 }
 
