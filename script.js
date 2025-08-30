@@ -247,7 +247,8 @@ let blackKeysPhysical = [];
 // This new structure replaces the old keyNoteMap objects.
 // It stores the note name and a base octave for each key, separated by layout.
 // This provides the necessary data for the dynamic note calculation logic.
-const keyData = {
+let keyData = {}; // This will be dynamically generated
+const keyDataTemplate = {
   // Row 1 (Numbers)
   '1': { green: { note: 'C', octave: 6 }, blue: null },
   '2': { green: { note: 'D', octave: 6 }, blue: { note: 'Db', octave: 4 } },
@@ -297,7 +298,7 @@ const keyData = {
   '/': { green: { note: 'E', octave: 4 }, blue: { note: 'E', octave: 4 } },
 };
 
-const keyBindings = {
+const keyBindingsTemplate = {
   't-green': {
     1: {
       'C3': '1qaz', 'D3': '2wsx', 'E3': '3edc', 'F3': '4rfv', 'G3': '5tgb', 'A3': '6yhn', 'B3': '7ujm',
@@ -382,6 +383,93 @@ function populateDynamicBindings() {
   }
 }
 
+let keyBindings = {};
+
+// This object holds the keyboard key assignments for the black keys in the 'blue' layout,
+// for each of the 7 possible base pitches. The strings are parsed into arrays of keycodes.
+const blueBlackKeyMappings = {
+    C: "sd ghj l; 23 567 90".replace(/ /g, '').split(''),
+    D: "as fgh kl 12 456 89".replace(/ /g, '').split(''),
+    E: "a dfg jk ; 1 345 78 0".replace(/ /g, '').split(''),
+    F: "sdf hj l;' 234 67 90-".replace(/ /g, '').replace(/[;'-]/g, ';').split(''), // Normalize special chars
+    G: "asd gh kl; 123 56 890".replace(/ /g, '').split(''),
+    A: "as fg jkl 12 45 789".replace(/ /g, '').split(''),
+    B: "a df hjk ; 1 34 678 0".replace(/ /g, '').split('')
+};
+
+// We need the original C-based sequences to determine the index of a note.
+const { whites: C_whites, blacks: C_blacks } = generateNoteSequence('C', 4);
+
+function regenerateKeyData(basePitch, noteSequence) {
+    const newKeyData = JSON.parse(JSON.stringify(keyDataTemplate));
+    
+    // --- Remap White Keys ---
+    for (const key in newKeyData) {
+        const keyInfo = newKeyData[key];
+        // Handle green layout
+        if (keyInfo.green) {
+            const originalNote = `${keyInfo.green.note}${keyInfo.green.octave}`;
+            const whiteIndex = C_whites.indexOf(originalNote);
+            if (whiteIndex !== -1 && whiteIndex < noteSequence.whites.length) {
+                const newNoteName = noteSequence.whites[whiteIndex];
+                const octaveMatch = newNoteName.match(/\d+$/);
+                const octave = octaveMatch ? parseInt(octaveMatch[0]) : 0;
+                const note = newNoteName.substring(0, newNoteName.length - octaveMatch[0].length);
+                keyInfo.green.note = note;
+                keyInfo.green.octave = octave;
+            }
+        }
+        // Handle blue layout (white keys are the same as green)
+        if (keyInfo.blue && (keyInfo.blue.note.includes('#') === false && keyInfo.blue.note.includes('b') === false)) {
+            const originalNote = `${keyInfo.blue.note}${keyInfo.blue.octave}`;
+            const whiteIndex = C_whites.indexOf(originalNote);
+            if (whiteIndex !== -1 && whiteIndex < noteSequence.whites.length) {
+                const newNoteName = noteSequence.whites[whiteIndex];
+                const octaveMatch = newNoteName.match(/\d+$/);
+                const octave = octaveMatch ? parseInt(octaveMatch[0]) : 0;
+                const note = newNoteName.substring(0, newNoteName.length - octaveMatch[0].length);
+                keyInfo.blue.note = note;
+                keyInfo.blue.octave = octave;
+            }
+        }
+    }
+
+    // --- Remap Black Keys (Blue Layout) ---
+    // 1. Clear all old black key data from the blue layout
+    for (const key in newKeyData) {
+        const keyInfo = newKeyData[key];
+        if (keyInfo.blue && (keyInfo.blue.note.includes('#') || keyInfo.blue.note.includes('b'))) {
+            keyInfo.blue = null;
+        }
+    }
+
+    // 2. Add new black key data based on the selected base pitch
+    const targetKeys = blueBlackKeyMappings[basePitch];
+    const originalKeys = blueBlackKeyMappings['C'];
+
+    originalKeys.forEach((originalKey, index) => {
+        const newKey = targetKeys[index];
+        if (!newKey) return;
+
+        const blackNoteIndex = C_blacks.indexOf(`${keyDataTemplate[originalKey].blue.note}${keyDataTemplate[originalKey].blue.octave}`);
+        
+        if (blackNoteIndex !== -1 && blackNoteIndex < noteSequence.blacks.length) {
+            const newNoteName = noteSequence.blacks[blackNoteIndex];
+            if (!newKeyData[newKey]) newKeyData[newKey] = { green: null }; // Ensure key exists
+            const octaveMatch = newNoteName.match(/\d+$/);
+            const octave = octaveMatch ? parseInt(octaveMatch[0]) : 0;
+            const note = newNoteName.substring(0, newNoteName.length - octaveMatch[0].length);
+            newKeyData[newKey].blue = {
+                note: note,
+                octave: octave
+            };
+        }
+    });
+
+    return newKeyData;
+}
+
+
 populateDynamicBindings();
 
 function formatBinding(bindingString) {
@@ -392,6 +480,69 @@ function formatBinding(bindingString) {
         return `${chars[0]} ${chars[1]}`;
     }
     return bindingString;
+}
+
+const noteNumToName = (num) => {
+  const octave = Math.floor(num / 12);
+  const noteIndex = num % 12;
+  // Use flat names for consistency with the rest of the app's display logic
+  const noteName = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'][noteIndex];
+  return `${noteName}${octave}`;
+};
+
+const noteNameToNum = (name) => {
+    const octave = parseInt(name.at(-1), 10);
+    const pc = name.slice(0, -1);
+    const idx = pitchIndex[pc];
+    if (idx === undefined) {
+        console.error(`Invalid note name for noteNameToNum: ${name}`);
+        return null;
+    };
+    return octave * 12 + idx;
+};
+
+function generateNoteSequence(basePitch, numOctaves) {
+  const startOctave = 3;
+  const numWhiteKeys = 7 * numOctaves + 3;
+
+  const modalSteps = {
+    'C': [2, 2, 1, 2, 2, 2, 1], // Ionian
+    'D': [2, 1, 2, 2, 2, 1, 2], // Dorian
+    'E': [1, 2, 2, 2, 1, 2, 2], // Phrygian
+    'F': [2, 2, 2, 1, 2, 2, 1], // Lydian
+    'G': [2, 2, 1, 2, 2, 1, 2], // Mixolydian
+    'A': [2, 1, 2, 2, 1, 2, 2], // Aeolian
+    'B': [1, 2, 2, 1, 2, 2, 2]  // Locrian
+  };
+
+  const whiteKeys = [];
+  const whiteNoteNums = new Set();
+  const steps = modalSteps[basePitch];
+  
+  let currentNoteNum = startOctave * 12 + pitchIndex[basePitch];
+
+  for (let i = 0; i < numWhiteKeys; i++) {
+    whiteKeys.push(noteNumToName(currentNoteNum));
+    whiteNoteNums.add(currentNoteNum);
+    const step = steps[i % 7];
+    currentNoteNum += step;
+  }
+
+  const blackKeys = [];
+  const minNote = noteNameToNum(whiteKeys[0]);
+  const maxNote = noteNameToNum(whiteKeys[whiteKeys.length - 1]);
+
+  if (minNote === null || maxNote === null) {
+      return { whites: [], blacks: [] };
+  }
+
+  for (let i = minNote; i <= maxNote; i++) {
+    if (!whiteNoteNums.has(i)) {
+      blackKeys.push(noteNumToName(i));
+    }
+  }
+
+  return { whites: whiteKeys, blacks: blackKeys };
 }
 
 function drawKeyboard(numOctaves = 1) {
@@ -405,27 +556,9 @@ function drawKeyboard(numOctaves = 1) {
   const bindingsMode = toggleStates.bindings[currentToggleStates.bindings];
   const layoutMode = toggleStates.layout[currentToggleStates.layout];
 
-  const startOctave = 3;
-    const noteOrder = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
-    const fullKeyboard = [];
-
-    for (let o = 0; o < numOctaves + 1; o++) {
-        for(const noteName of noteOrder) {
-            fullKeyboard.push(noteName + (startOctave + o));
-        }
-    }
-
-    const endNote = 'E' + (startOctave + numOctaves);
-    const endIndex = fullKeyboard.indexOf(endNote);
-    const finalKeyboard = fullKeyboard.slice(0, endIndex + 1);
-    
-    finalKeyboard.forEach(note => {
-        if (note.includes('#') || note.includes('b')) {
-            blackKeysPhysical.push(note);
-        } else {
-            whiteKeysPhysical.push(note);
-        }
-    });
+  const { whites, blacks } = generateNoteSequence(currentBasePitch, numOctaves);
+  whiteKeysPhysical = whites;
+  blackKeysPhysical = blacks;
   
   const blackBetweenIndex = {};
   blackKeysPhysical.forEach(note => {
@@ -772,7 +905,9 @@ const octaveToggleOptions = document.querySelectorAll('.toggle-option');
 const soundDisplay = document.getElementById('sound-name-display');
 const prevSoundBtn = document.getElementById('prev-sound');
 const nextSoundBtn = document.getElementById('next-sound');
+const basePitchSelect = document.getElementById('base-pitch-select');
 
+let currentBasePitch = 'C';
 const sounds = ['sine', 'triangle', 'square', 'sawtooth', 'organ'];
 let currentSoundIndex = 1; // Default to triangle
 
@@ -802,8 +937,7 @@ octaveToggleOptions.forEach(option => {
     option.addEventListener('click', () => {
         octaveToggleOptions.forEach(opt => opt.classList.remove('active'));
         option.classList.add('active');
-        const numOctaves = parseInt(option.dataset.octaves, 10);
-        drawKeyboard(numOctaves);
+        updateForPitchChange(); // This will regenerate everything based on the new octave count
     });
 });
 
@@ -860,7 +994,23 @@ function setupToggles() {
 }
 
 
+function updateForPitchChange() {
+  const numOctaves = getActiveOctaveCount();
+  const noteSequence = generateNoteSequence(currentBasePitch, numOctaves);
+  
+  keyData = regenerateKeyData(currentBasePitch, noteSequence);
+  keyBindings = JSON.parse(JSON.stringify(keyBindingsTemplate)); // Reset bindings
+  populateDynamicBindings();
+  
+  drawKeyboard(numOctaves);
+}
+
+basePitchSelect.addEventListener('change', (e) => {
+  currentBasePitch = e.target.value;
+  updateForPitchChange();
+});
+
 // Initial draw
 setupToggles();
-drawKeyboard(1);
+updateForPitchChange(); // Initial setup for C
 updateSoundByIndex(currentSoundIndex);
