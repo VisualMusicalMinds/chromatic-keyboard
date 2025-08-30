@@ -156,7 +156,7 @@ body {
   cursor: pointer;
   z-index: 3;
 }
-.black-key.pressed { background: linear-gradient(#202020, #444); }
+.black-key.pressed { /* Style overridden by JS */ }
 
 .label {
   display: none; /* Remove text from keys */
