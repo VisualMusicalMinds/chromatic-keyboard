@@ -421,11 +421,11 @@ function onPointerUp(note) {
 }
 
 // -------- NEW CONTROLS --------
-const knob = document.querySelector('.knob');
-const soundLabels = document.querySelectorAll('.sound-labels span');
 const octaveToggleOptions = document.querySelectorAll('.toggle-option');
+const soundDisplay = document.getElementById('sound-name-display');
+const prevSoundBtn = document.getElementById('prev-sound');
+const nextSoundBtn = document.getElementById('next-sound');
 
-const soundStops = [-144, -72, 0, 72, 144];
 const sounds = ['sine', 'triangle', 'square', 'sawtooth', 'organ'];
 let currentSoundIndex = 1; // Default to triangle
 
@@ -433,34 +433,20 @@ function updateSoundByIndex(index) {
     // Update state
     currentSoundIndex = index;
     currentSound = sounds[currentSoundIndex];
-    const angle = soundStops[currentSoundIndex];
 
     // Update visuals
-    knob.style.transform = `rotate(${angle}deg)`;
-    soundLabels.forEach((label, i) => {
-        label.classList.toggle('active', i === currentSoundIndex);
-    });
+    soundDisplay.textContent = currentSound;
 }
 
-// Knob Click Logic
-knob.addEventListener('click', (e) => {
-    const rect = knob.getBoundingClientRect();
-    const isRightSide = e.clientX > rect.left + rect.width / 2;
-    
-    if (isRightSide) {
-        currentSoundIndex = (currentSoundIndex + 1) % sounds.length;
-    } else {
-        currentSoundIndex = (currentSoundIndex - 1 + sounds.length) % sounds.length;
-    }
-    
+// Sound Dial Logic
+prevSoundBtn.addEventListener('click', () => {
+    currentSoundIndex = (currentSoundIndex - 1 + sounds.length) % sounds.length;
     updateSoundByIndex(currentSoundIndex);
 });
 
-// Sound Label Click Logic
-soundLabels.forEach((label, index) => {
-    label.addEventListener('click', () => {
-        updateSoundByIndex(index);
-    });
+nextSoundBtn.addEventListener('click', () => {
+    currentSoundIndex = (currentSoundIndex + 1) % sounds.length;
+    updateSoundByIndex(currentSoundIndex);
 });
 
 // Octave Toggle Logic
