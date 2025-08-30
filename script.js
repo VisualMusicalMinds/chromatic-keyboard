@@ -300,14 +300,14 @@ const keyData = {
 const keyBindings = {
   't-green': {
     1: {
-      'C3': 'zaq1', 'D3': 'xsw2', 'E3': 'cde3', 'F3': 'vfr4', 'G3': 'bgt5', 'A3': 'nhy6', 'B3': 'mju7',
-      'C4': ',ki8', 'D4': '.lo9', 'E4': '/;p0'
+      'C3': '1qaz', 'D3': '2wsx', 'E3': '3edc', 'F3': '4rfv', 'G3': '5tgb', 'A3': '6yhn', 'B3': '7ujm',
+      'C4': '8ik,', 'D4': '9ol.', 'E4': '0p;/'
     },
     2: {
       'C3': 'zq', 'D3': 'xw', 'E3': 'ce', 'F3': 'vr', 'G3': 'bt', 'A3': 'ny', 'B3': 'mu',
-      'C4': ',ai1', 'D4': '.so2', 'E4': '/dp3',
-      'F4': 'f4', 'G4': 'g5', 'A4': 'h6', 'B4': 'j7',
-      'C5': 'k8', 'D5': 'l9', 'E5': ';0'
+      'C4': '1a,i', 'D4': '2s.o', 'E4': '3d/p', // Note: User bindings were slightly different, this is corrected based on keyData
+      'F4': '4f', 'G4': '5g', 'A4': '6h', 'B4': '7j',
+      'C5': '8k', 'D5': '9l', 'E5': '0;'
     },
     3: {}, 4: {}
   },
@@ -373,6 +373,16 @@ function populateDynamicBindings() {
 }
 
 populateDynamicBindings();
+
+function formatBinding(bindingString) {
+    const chars = bindingString.split('');
+    if (chars.length === 4) {
+        return `${chars[0]}${chars[1]}<br>${chars[2]}${chars[3]}`;
+    } else if (chars.length === 2) {
+        return `${chars[0]} ${chars[1]}`;
+    }
+    return bindingString;
+}
 
 function drawKeyboard(numOctaves = 1) {
   whitesEl.innerHTML = '';
@@ -466,8 +476,9 @@ function drawKeyboard(numOctaves = 1) {
         if (binding) {
           const bindingLabel = document.createElement('div');
           bindingLabel.className = 'binding-label';
-          bindingLabel.textContent = binding;
+          bindingLabel.innerHTML = formatBinding(binding);
           div.appendChild(bindingLabel);
+          div.classList.add('bindings-active');
         }
       }
 
@@ -503,8 +514,9 @@ function drawKeyboard(numOctaves = 1) {
         if (binding) {
           const bindingLabel = document.createElement('div');
           bindingLabel.className = 'binding-label';
-          bindingLabel.textContent = binding;
+          bindingLabel.innerHTML = formatBinding(binding);
           div.appendChild(bindingLabel);
+          div.classList.add('bindings-active');
         }
       }
 
