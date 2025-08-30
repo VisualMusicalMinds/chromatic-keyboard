@@ -220,13 +220,13 @@ const noteColors = {
 };
 
 const noteLightColors = {
-  'C': '#FFD1D1',
-  'D': '#FFEBD6',
-  'E': '#FFF5CC',
-  'F': '#D6F5DD',
-  'G': '#D5F2F3',
-  'A': '#CCE5FF',
-  'B': '#EEDCFA'
+  'C': '#ff8780',
+  'D': '#ffc266',
+  'E': '#ffdd66',
+  'F': '#85d99b',
+  'G': '#80d8dd',
+  'A': '#66b3ff',
+  'B': '#d099ea'
 };
 
 // -------- LAYOUT --------
