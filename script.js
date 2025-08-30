@@ -413,10 +413,12 @@ function regenerateKeyData(basePitch, noteSequence) {
             if (whiteIndex !== -1 && whiteIndex < noteSequence.whites.length) {
                 const newNoteName = noteSequence.whites[whiteIndex];
                 const octaveMatch = newNoteName.match(/\d+$/);
-                const octave = octaveMatch ? parseInt(octaveMatch[0]) : 0;
-                const note = newNoteName.substring(0, newNoteName.length - octaveMatch[0].length);
-                keyInfo.green.note = note;
-                keyInfo.green.octave = octave;
+                if (octaveMatch) {
+                    const octave = parseInt(octaveMatch[0], 10);
+                    const note = newNoteName.substring(0, newNoteName.length - octaveMatch[0].length);
+                    keyInfo.green.note = note;
+                    keyInfo.green.octave = octave;
+                }
             }
         }
         // Handle blue layout (white keys are the same as green)
@@ -426,10 +428,12 @@ function regenerateKeyData(basePitch, noteSequence) {
             if (whiteIndex !== -1 && whiteIndex < noteSequence.whites.length) {
                 const newNoteName = noteSequence.whites[whiteIndex];
                 const octaveMatch = newNoteName.match(/\d+$/);
-                const octave = octaveMatch ? parseInt(octaveMatch[0]) : 0;
-                const note = newNoteName.substring(0, newNoteName.length - octaveMatch[0].length);
-                keyInfo.blue.note = note;
-                keyInfo.blue.octave = octave;
+                if (octaveMatch) {
+                    const octave = parseInt(octaveMatch[0], 10);
+                    const note = newNoteName.substring(0, newNoteName.length - octaveMatch[0].length);
+                    keyInfo.blue.note = note;
+                    keyInfo.blue.octave = octave;
+                }
             }
         }
     }
@@ -457,12 +461,14 @@ function regenerateKeyData(basePitch, noteSequence) {
             const newNoteName = noteSequence.blacks[blackNoteIndex];
             if (!newKeyData[newKey]) newKeyData[newKey] = { green: null }; // Ensure key exists
             const octaveMatch = newNoteName.match(/\d+$/);
-            const octave = octaveMatch ? parseInt(octaveMatch[0]) : 0;
-            const note = newNoteName.substring(0, newNoteName.length - octaveMatch[0].length);
-            newKeyData[newKey].blue = {
-                note: note,
-                octave: octave
-            };
+            if (octaveMatch) {
+                const octave = parseInt(octaveMatch[0], 10);
+                const note = newNoteName.substring(0, newNoteName.length - octaveMatch[0].length);
+                newKeyData[newKey].blue = {
+                    note: note,
+                    octave: octave
+                };
+            }
         }
     });
 
