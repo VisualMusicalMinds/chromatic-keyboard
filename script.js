@@ -621,8 +621,16 @@ function getNoteMapping(key, layout, octaves, isShifted) {
 
     } else { // Blue layout
         noteToPlay = `${note}${octave}`;
-        const lightUpOctave = Math.min(octave, 4); // Cap lighting at octave 4 for 1-octave view
+        
+        let lightUpOctave;
+        const lowerKeys = ['q', '2', 'w', '3', 'e'];
+        if (lowerKeys.includes(key)) {
+            lightUpOctave = 3; // Force these keys to light up the lower octave
+        } else {
+            lightUpOctave = Math.min(octave, 4); // Use existing logic for all other keys
+        }
         noteToLightUp = `${note}${lightUpOctave}`;
+
         if (isShifted) {
             noteToPlay = `${note}${octave + 2}`;
         }
