@@ -97,10 +97,14 @@ const pitchIndex = {
   'G':7, 'G#':8, 'Ab':8, 'A':9, 'A#':10, 'Bb':10, 'B':11
 };
 
-function freqOf(note, octaveOffset = 0) {
-  const octave = parseInt(note.at(-1), 10) + octaveOffset;
+function freqOf(note) {
+  const octave = parseInt(note.at(-1), 10);
   const pc = note.slice(0, -1);
   const idx = pitchIndex[pc];
+  if (idx === undefined) {
+    console.error(`Invalid note: ${note}`);
+    return 0;
+  }
   const noteNum = octave * 12 + idx;
   const A4num = 4 * 12 + 9;
   return 440 * Math.pow(2, (noteNum - A4num) / 12);
@@ -119,8 +123,7 @@ function buildPeriodicVoiceWave(ctx) {
   return ctx.createPeriodicWave(real, imag);
 }
 
-function startNote(note, velocity = 0.2, octaveOffset = 0) {
-  const finalNote = note.slice(0,-1) + (parseInt(note.at(-1), 10) + octaveOffset);
+function startNote(finalNote, velocity = 0.2) {
   if (active.has(finalNote)) {
     stopNote(finalNote, true); // Immediate stop on retrigger
   }
@@ -140,7 +143,7 @@ function startNote(note, velocity = 0.2, octaveOffset = 0) {
 
   // Set common properties
   osc.type = profile.oscillator;
-  osc.frequency.value = freqOf(note, octaveOffset);
+  osc.frequency.value = freqOf(finalNote);
   filter.type = profile.filterType;
   filter.frequency.value = profile.filterFreq;
   filter.Q.value = profile.filterQ;
@@ -241,30 +244,57 @@ const blacksEl = document.getElementById('blacks');
 let whiteKeysPhysical = [];
 let blackKeysPhysical = [];
 
-const keyNoteMapBlue = {
-  'z':'C3', 'x':'D3', 'c':'E3', 'v':'F3', 'b':'G3', 'n':'A3', 'm':'B3',
-  ',':'C4', '.':'D4', '/':'E4',
-  'q':'C4', 'w':'D4', 'e':'E4', 'r':'F4', 't':'G4', 'y':'A4', 'u':'B4',
-  'i':'C5', 'o':'D5', 'p':'E5',
-  's':'Db3', 'd':'Eb3', 'g':'Gb3', 'h':'Ab3', 'j':'Bb3',
-  'l':'Db4', ';':'Eb4',
-  '2':'Db4', '3':'Eb4', '5':'Gb4', '6':'Ab4', '7':'Bb4',
-  '9':'Db5', '0':'Eb5',
-};
+// This new structure replaces the old keyNoteMap objects.
+// It stores the note name and a base octave for each key, separated by layout.
+// This provides the necessary data for the dynamic note calculation logic.
+const keyData = {
+  // Row 1 (Numbers)
+  '1': { green: { note: 'C', octave: 6 }, blue: null },
+  '2': { green: { note: 'D', octave: 6 }, blue: { note: 'Db', octave: 4 } },
+  '3': { green: { note: 'E', octave: 6 }, blue: { note: 'Eb', octave: 4 } },
+  '4': { green: { note: 'F', octave: 6 }, blue: null },
+  '5': { green: { note: 'G', octave: 6 }, blue: { note: 'Gb', octave: 4 } },
+  '6': { green: { note: 'A', octave: 6 }, blue: { note: 'Ab', octave: 4 } },
+  '7': { green: { note: 'B', octave: 6 }, blue: { note: 'Bb', octave: 4 } },
+  '8': { green: { note: 'C', octave: 7 }, blue: null },
+  '9': { green: { note: 'D', octave: 7 }, blue: { note: 'Db', octave: 5 } },
+  '0': { green: { note: 'E', octave: 7 }, blue: { note: 'Eb', octave: 5 } },
 
-const keyNoteMapGreen = {
-  // Bottom row: C3 to E4
-  'z':'C3', 'x':'D3', 'c':'E3', 'v':'F3', 'b':'G3', 'n':'A3', 'm':'B3',
-  ',':'C4', '.':'D4', '/':'E4',
-  // Middle row: C4 to E5
-  'a':'C4', 's':'D4', 'd':'E4', 'f':'F4', 'g':'G4', 'h':'A4', 'j':'B4',
-  'k':'C5', 'l':'D5', ';':'E5',
-  // Top row: C5 to E6
-  'q':'C5', 'w':'D5', 'e':'E5', 'r':'F5', 't':'G5', 'y':'A5', 'u':'B5',
-  'i':'C6', 'o':'D6', 'p':'E6',
-  // Number row: C6 to E7
-  '1':'C6', '2':'D6', '3':'E6', '4':'F6', '5':'G6', '6':'A6', '7':'B6',
-  '8':'C7', '9':'D7', '0':'E7',
+  // Row 2 (QWERTY)
+  'q': { green: { note: 'C', octave: 5 }, blue: { note: 'C', octave: 4 } },
+  'w': { green: { note: 'D', octave: 5 }, blue: { note: 'D', octave: 4 } },
+  'e': { green: { note: 'E', octave: 5 }, blue: { note: 'E', octave: 4 } },
+  'r': { green: { note: 'F', octave: 5 }, blue: { note: 'F', octave: 4 } },
+  't': { green: { note: 'G', octave: 5 }, blue: { note: 'G', octave: 4 } },
+  'y': { green: { note: 'A', octave: 5 }, blue: { note: 'A', octave: 4 } },
+  'u': { green: { note: 'B', octave: 5 }, blue: { note: 'B', octave: 4 } },
+  'i': { green: { note: 'C', octave: 6 }, blue: { note: 'C', octave: 5 } },
+  'o': { green: { note: 'D', octave: 6 }, blue: { note: 'D', octave: 5 } },
+  'p': { green: { note: 'E', octave: 6 }, blue: { note: 'E', octave: 5 } },
+
+  // Row 3 (ASDF)
+  'a': { green: { note: 'C', octave: 4 }, blue: null },
+  's': { green: { note: 'D', octave: 4 }, blue: { note: 'Db', octave: 3 } },
+  'd': { green: { note: 'E', octave: 4 }, blue: { note: 'Eb', octave: 3 } },
+  'f': { green: { note: 'F', octave: 4 }, blue: null },
+  'g': { green: { note: 'G', octave: 4 }, blue: { note: 'Gb', octave: 3 } },
+  'h': { green: { note: 'A', octave: 4 }, blue: { note: 'Ab', octave: 3 } },
+  'j': { green: { note: 'B', octave: 4 }, blue: { note: 'Bb', octave: 3 } },
+  'k': { green: { note: 'C', octave: 5 }, blue: null },
+  'l': { green: { note: 'D', octave: 5 }, blue: { note: 'Db', octave: 4 } },
+  ';': { green: { note: 'E', octave: 5 }, blue: { note: 'Eb', octave: 4 } },
+
+  // Row 4 (ZXCV)
+  'z': { green: { note: 'C', octave: 3 }, blue: { note: 'C', octave: 3 } },
+  'x': { green: { note: 'D', octave: 3 }, blue: { note: 'D', octave: 3 } },
+  'c': { green: { note: 'E', octave: 3 }, blue: { note: 'E', octave: 3 } },
+  'v': { green: { note: 'F', octave: 3 }, blue: { note: 'F', octave: 3 } },
+  'b': { green: { note: 'G', octave: 3 }, blue: { note: 'G', octave: 3 } },
+  'n': { green: { note: 'A', octave: 3 }, blue: { note: 'A', octave: 3 } },
+  'm': { green: { note: 'B', octave: 3 }, blue: { note: 'B', octave: 3 } },
+  ',': { green: { note: 'C', octave: 4 }, blue: { note: 'C', octave: 4 } },
+  '.': { green: { note: 'D', octave: 4 }, blue: { note: 'D', octave: 4 } },
+  '/': { green: { note: 'E', octave: 4 }, blue: { note: 'E', octave: 4 } },
 };
 
 function drawKeyboard(numOctaves = 1) {
@@ -387,8 +417,7 @@ function drawKeyboard(numOctaves = 1) {
 }
 
 // -------- INTERACTION --------
-function pressVisual(note, pressed, octaveOffset = 0) {
-  const finalNote = note.slice(0,-1) + (parseInt(note.at(-1), 10) + octaveOffset);
+function pressVisual(finalNote, pressed) {
   const el = document.querySelector(`[data-note="${finalNote}"]`);
   if (!el) return;
 
@@ -433,49 +462,120 @@ function pressVisual(note, pressed, octaveOffset = 0) {
 }
 
 const downKeys = new Map();
-function keyToNote(key) {
-  const layoutMode = toggleStates.layout[currentToggleStates.layout];
-  if (layoutMode === 't-green') {
-    return keyNoteMapGreen[key] || null;
-  } else { // 't-blue'
-    return keyNoteMapBlue[key] || null;
+
+function getActiveOctaveCount() {
+  const activeOption = document.querySelector('.toggle-option.active');
+  return activeOption ? parseInt(activeOption.dataset.octaves, 10) : 1;
+}
+
+function getNoteMapping(key, layout, octaves, isShifted) {
+  const keyInfo = keyData[key];
+  if (!keyInfo) return null;
+
+  const layoutKeyData = (layout === 't-green') ? keyInfo.green : keyInfo.blue;
+  if (!layoutKeyData) return null;
+
+  const { note, octave } = layoutKeyData;
+  let noteToPlay = `${note}${octave}`;
+  let noteToLightUp = noteToPlay;
+
+  // --- Logic for 3 or 4 octaves (default behavior) ---
+  if (octaves >= 3) {
+    if (layout === 't-blue' && isShifted) {
+      noteToPlay = `${note}${octave + 2}`;
+    }
+    // For this mode, the key you light up is the one you play,
+    // unless shifted in blue mode.
+    return { noteToPlay, noteToLightUp };
   }
+
+  // --- Logic for 1 octave ---
+  if (octaves === 1) {
+    const startOctave = 3; // The first visible octave
+    
+    if (layout === 't-green') {
+        const keyRow = getKeyRow(key);
+        if (!keyRow) return null;
+
+        let octaveOffset = 0;
+        if (keyRow === 'a') octaveOffset = 1;
+        else if (keyRow === 'q') octaveOffset = 2;
+        else if (keyRow === '1') octaveOffset = 3;
+        
+        noteToPlay = `${note}${startOctave + octaveOffset}`;
+        noteToLightUp = `${note}${startOctave}`;
+
+    } else { // Blue layout
+        noteToPlay = `${note}${octave}`;
+        noteToLightUp = `${note}${startOctave}`;
+        if (isShifted) {
+            noteToPlay = `${note}${octave + 2}`;
+        }
+    }
+    return { noteToPlay, noteToLightUp };
+  }
+
+  // --- Logic for 2 octaves ---
+  if (octaves === 2) {
+    if (layout === 't-green') {
+        const keyRow = getKeyRow(key);
+        if (!keyRow) return null;
+
+        noteToPlay = `${note}${octave}`;
+        
+        let lightOctave = 3;
+        if (keyRow === 'a' || keyRow === '1') {
+            lightOctave = 4;
+        }
+        noteToLightUp = `${note}${lightOctave}`;
+
+    } else { // Blue layout
+        noteToPlay = `${note}${octave}`;
+        noteToLightUp = noteToPlay;
+        if (isShifted) {
+            noteToPlay = `${note}${octave + 2}`;
+        }
+    }
+    return { noteToPlay, noteToLightUp };
+  }
+
+  return null; // Should not be reached
+}
+
+function getKeyRow(key) {
+    if ('zxcvbnm,./'.includes(key)) return 'z';
+    if ('asdfghjkl;'.includes(key)) return 'a';
+    if ('qwertyuiop'.includes(key)) return 'q';
+    if ('1234567890'.includes(key)) return '1';
+    return null;
 }
 
 document.addEventListener('keydown', (e) => {
   if (e.repeat || downKeys.has(e.code)) return;
 
   const layoutMode = toggleStates.layout[currentToggleStates.layout];
+  const octaves = getActiveOctaveCount();
   const isShifted = e.shiftKey || e.getModifierState("CapsLock");
-  let key = e.key.toLowerCase();
-  const note = keyToNote(key);
-  if (!note) return;
+  const key = e.key.toLowerCase();
 
+  const mapping = getNoteMapping(key, layoutMode, octaves, isShifted);
+  if (!mapping) return;
+  
   if (ctx.state !== 'running') ctx.resume();
 
-  let octaveOffset = 0;
-  let useShift = false;
-  if (layoutMode === 't-blue') {
-    octaveOffset = isShifted ? 2 : 0;
-    useShift = isShifted;
-  }
+  pressVisual(mapping.noteToLightUp, true);
+  startNote(mapping.noteToPlay, 0.2);
   
-  downKeys.set(e.code, { note, shifted: useShift });
-  pressVisual(note, true, octaveOffset);
-  startNote(note, 0.2, octaveOffset);
+  downKeys.set(e.code, mapping);
 });
 
 document.addEventListener('keyup', (e) => {
-  const downKeyInfo = downKeys.get(e.code);
-  if (!downKeyInfo) return;
+  const mapping = downKeys.get(e.code);
+  if (!mapping) return;
   downKeys.delete(e.code);
 
-  const { note, shifted } = downKeyInfo;
-  const octaveOffset = shifted ? 2 : 0; // The `shifted` boolean is now correctly set by keydown
-
-  pressVisual(note, false, octaveOffset);
-  const finalNote = note.slice(0,-1) + (parseInt(note.at(-1), 10) + octaveOffset);
-  stopNote(finalNote);
+  pressVisual(mapping.noteToLightUp, false);
+  stopNote(mapping.noteToPlay);
 });
 
 let capsLock = false;
@@ -484,13 +584,14 @@ window.addEventListener('keydown', e => { if (e.key === 'CapsLock') capsLock = !
 function onPointerDown(note) {
   if (ctx.state !== 'running') ctx.resume();
   const octaveOffset = capsLock ? 2 : 0;
-  pressVisual(note, true, octaveOffset);
-  startNote(note, 0.2, octaveOffset);
+  const finalNote = note.slice(0,-1) + (parseInt(note.at(-1), 10) + octaveOffset);
+  pressVisual(finalNote, true);
+  startNote(finalNote, 0.2);
 }
 function onPointerUp(note) {
   const octaveOffset = capsLock ? 2 : 0;
-  pressVisual(note, false, octaveOffset);
   const finalNote = note.slice(0,-1) + (parseInt(note.at(-1), 10) + octaveOffset);
+  pressVisual(finalNote, false);
   stopNote(finalNote);
 }
 
