@@ -322,10 +322,18 @@ function drawKeyboard(numOctaves = 1) {
         div.style.backgroundColor = '#fff';
       }
       
-      if (namesMode === 't-yellow' || namesMode === 't-green') {
+      if (namesMode !== 'deactivated') {
         const label = document.createElement('div');
         label.className = 'key-label';
         label.textContent = noteName;
+        
+        // Set text color based on the Color toggle state
+        if (colorMode === 't-green') {
+          label.style.color = 'white';
+        } else { // 'deactivated' or 't-blue'
+          label.style.color = 'black';
+        }
+
         div.appendChild(label);
       }
       whitesEl.appendChild(div);
@@ -346,14 +354,7 @@ function drawKeyboard(numOctaves = 1) {
       div.dataset.note = note;
       const pc = note.slice(0, -1);
 
-      // Apply color based on mode
-      if (colorMode === 't-green') {
-        div.style.background = 'linear-gradient(#111, #333)';
-      } else {
-        div.style.background = '#fff';
-        div.style.border = '1px solid #999';
-        div.style.color = '#000'; // Make label visible on white
-      }
+      // Black keys are always black, styled by CSS.
 
       if (namesMode === 't-blue' || namesMode === 't-green') {
         const label = document.createElement('div');
@@ -382,30 +383,36 @@ function pressVisual(note, pressed, octaveOffset = 0) {
   const colorMode = toggleStates.color[currentToggleStates.color];
   const isWhiteKey = el.classList.contains('white-key');
 
-  if (pressed) {
-    if (colorMode === 'deactivated') {
-      el.style.background = '#d3d3d3';
-    } else { // 't-green' or 't-blue'
-      if (isWhiteKey) {
-        el.style.backgroundColor = noteColors[noteName] || '#fff';
-      } else {
-        el.style.background = blackNoteColors[noteName] || '#333';
+  if (isWhiteKey) {
+    // === WHITE KEY LOGIC ===
+    if (pressed) {
+      if (colorMode === 'deactivated') {
+        el.style.backgroundColor = '#d3d3d3'; // Turn grey when played
+      } else if (colorMode === 't-green') {
+        el.style.backgroundColor = noteColors[noteName] || '#fff'; // Brighter version
+      } else if (colorMode === 't-blue') {
+        el.style.backgroundColor = noteColors[noteName] || '#fff'; // Assigned color
+      }
+    } else { // Released
+      if (colorMode === 'deactivated') {
+        el.style.backgroundColor = '#fff'; // Back to white
+      } else if (colorMode === 't-green') {
+        el.style.backgroundColor = noteLightColors[noteName] || '#fff'; // Back to light color
+      } else if (colorMode === 't-blue') {
+        el.style.backgroundColor = '#fff'; // Back to white
       }
     }
-  } else { // Releasing key
-    if (colorMode === 't-green') {
-      if (isWhiteKey) {
-        el.style.backgroundColor = noteLightColors[noteName] || '#fff';
-      } else {
-        el.style.background = ''; // Reset to CSS gradient
+  } else {
+    // === BLACK KEY LOGIC ===
+    if (pressed) {
+      if (colorMode === 'deactivated') {
+        el.style.background = '#d3d3d3'; // Turn grey when played
+      } else if (colorMode === 't-green' || colorMode === 't-blue') {
+        el.style.background = blackNoteColors[noteName] || '#333'; // Assigned color
       }
-    } else { // 'deactivated' or 't-blue'
-      if (isWhiteKey) {
-        el.style.backgroundColor = '#fff';
-      } else {
-        // This was set to white in drawKeyboard, so reset to that
-        el.style.background = '#fff'; 
-      }
+    } else { // Released
+      // In all modes, return to black.
+      el.style.background = ''; // Reset to CSS gradient
     }
   }
 }
