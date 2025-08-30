@@ -81,7 +81,7 @@ const soundProfiles = {
     filterQ: 0.7,
   },
   organ: {
-    oscillator: "custom", // This will signal to use the periodic wave
+    oscillator: "sine", // Base type, will be overridden by periodic wave
     attack: 0.02,
     decay: 0.1,
     sustain: 0.7,
@@ -138,14 +138,17 @@ function startNote(note, velocity = 0.2, octaveOffset = 0) {
   
   let lfo = null;
 
+  // Set common properties
+  osc.type = profile.oscillator;
+  osc.frequency.value = freqOf(note, octaveOffset);
   filter.type = profile.filterType;
   filter.frequency.value = profile.filterFreq;
   filter.Q.value = profile.filterQ;
 
-  if (profile.oscillator === 'custom') { // It's the organ
+  // Handle special case for organ
+  if (currentSound === 'organ') {
     if (!organWave) organWave = buildPeriodicVoiceWave(ctx);
     osc.setPeriodicWave(organWave);
-    osc.frequency.value = freqOf(note, octaveOffset);
 
     lfo = ctx.createOscillator();
     const lfoGain = ctx.createGain();
@@ -155,9 +158,6 @@ function startNote(note, velocity = 0.2, octaveOffset = 0) {
     lfoGain.gain.value = 2.5; // Vibrato depth in Hz
     lfo.connect(lfoGain).connect(osc.frequency);
     lfo.start(now);
-  } else {
-    osc.type = profile.oscillator;
-    osc.frequency.value = freqOf(note, octaveOffset);
   }
 
   const peakGain = 0.2;
@@ -433,9 +433,10 @@ function updateSoundByIndex(index) {
     // Update state
     currentSoundIndex = index;
     currentSound = sounds[currentSoundIndex];
+    const displayName = currentSound.charAt(0).toUpperCase() + currentSound.slice(1);
 
     // Update visuals
-    soundDisplay.textContent = currentSound;
+    soundDisplay.textContent = displayName;
 }
 
 // Sound Dial Logic
@@ -460,6 +461,46 @@ octaveToggleOptions.forEach(option => {
 });
 
 
+// -------- TOGGLE GRID LOGIC --------
+const toggleStates = {
+  color: ['deactivated', 't-green', 't-yellow'],
+  names: ['deactivated', 't-yellow', 't-green', 't-blue'],
+  bindings: ['deactivated', 't-blue'],
+  layout: ['deactivated', 't-green', 't-blue']
+};
+
+const currentToggleStates = {
+  color: 0,
+  names: 0,
+  bindings: 0,
+  layout: 0
+};
+
+function setupToggles() {
+  for (const toggleName in toggleStates) {
+    const button = document.getElementById(`toggle-${toggleName}`);
+    if (button) {
+      button.addEventListener('click', () => {
+        const states = toggleStates[toggleName];
+        let currentIndex = currentToggleStates[toggleName];
+        
+        currentIndex = (currentIndex + 1) % states.length;
+        currentToggleStates[toggleName] = currentIndex;
+
+        const newState = states[currentIndex];
+
+        // Reset classes, keeping the base class
+        button.className = 'toggle-btn'; 
+        if (newState !== 'deactivated') {
+          button.classList.add(newState);
+        }
+      });
+    }
+  }
+}
+
+
 // Initial draw
+setupToggles();
 drawKeyboard(1);
 updateSoundByIndex(currentSoundIndex);
