@@ -259,6 +259,7 @@ function drawKeyboard(numOctaves = 1) {
   blackKeysPhysical = [];
   
   const colorMode = toggleStates.color[currentToggleStates.color];
+  const namesMode = toggleStates.names[currentToggleStates.names];
 
   const startOctave = 3;
     const noteOrder = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
@@ -281,7 +282,6 @@ function drawKeyboard(numOctaves = 1) {
             whiteKeysPhysical.push(note);
         }
     });
-  }
   
   const blackBetweenIndex = {};
   blackKeysPhysical.forEach(note => {
@@ -322,10 +322,12 @@ function drawKeyboard(numOctaves = 1) {
         div.style.backgroundColor = '#fff';
       }
       
-      const label = document.createElement('div');
-      label.className = 'key-label';
-      label.textContent = noteName;
-      div.appendChild(label);
+      if (namesMode === 't-yellow' || namesMode === 't-green') {
+        const label = document.createElement('div');
+        label.className = 'key-label';
+        label.textContent = noteName;
+        div.appendChild(label);
+      }
       whitesEl.appendChild(div);
       div.addEventListener('mousedown', () => onPointerDown(note));
       div.addEventListener('mouseup', () => onPointerUp(note));
@@ -353,10 +355,12 @@ function drawKeyboard(numOctaves = 1) {
         div.style.color = '#000'; // Make label visible on white
       }
 
-      const label = document.createElement('div');
-      label.className = 'key-label';
-      label.innerHTML = blackKeyDisplayMap[pc] || '';
-      div.appendChild(label);
+      if (namesMode === 't-blue' || namesMode === 't-green') {
+        const label = document.createElement('div');
+        label.className = 'key-label';
+        label.innerHTML = blackKeyDisplayMap[pc] || '';
+        div.appendChild(label);
+      }
       blacksEl.appendChild(div);
       div.addEventListener('mousedown', () => onPointerDown(note));
       div.addEventListener('mouseup', () => onPointerUp(note));
@@ -524,8 +528,8 @@ function setupToggles() {
           button.classList.add(newState);
         }
 
-        // If the color toggle was changed, redraw the keyboard
-        if (toggleName === 'color') {
+        // If the color or names toggle was changed, redraw the keyboard
+        if (toggleName === 'color' || toggleName === 'names') {
           const activeOctaveEl = document.querySelector('.toggle-option.active');
           const numOctaves = activeOctaveEl ? parseInt(activeOctaveEl.dataset.octaves, 10) : 1;
           drawKeyboard(numOctaves);
