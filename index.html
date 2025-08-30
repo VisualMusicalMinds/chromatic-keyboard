@@ -9,24 +9,19 @@
 <body>
 
 <div class="controls-container">
-  <div class="sound-control">
-    <div class="knob-container">
-      <div class="knob"></div>
+  <div class="main-controls">
+    <div class="octave-control">
+      <div class="toggle-switch">
+        <div class="toggle-option active" data-octaves="1">1</div>
+        <div class="toggle-option" data-octaves="2">2</div>
+        <div class="toggle-option" data-octaves="3">3</div>
+        <div class="toggle-option" data-octaves="4">4</div>
+      </div>
     </div>
-    <div class="sound-labels">
-      <span data-sound="sine">Sine</span>
-      <span data-sound="triangle">Triangle</span>
-      <span data-sound="square">Square</span>
-      <span data-sound="sawtooth">Sawtooth</span>
-      <span data-sound="organ">Organ</span>
-    </div>
-  </div>
-  <div class="octave-control">
-    <div class="toggle-switch">
-      <div class="toggle-option active" data-octaves="1">1</div>
-      <div class="toggle-option" data-octaves="2">2</div>
-      <div class="toggle-option" data-octaves="3">3</div>
-      <div class="toggle-option" data-octaves="4">4</div>
+    <div class="sound-dial-control">
+      <button class="dial-btn" id="prev-sound">◀</button>
+      <span id="sound-name-display">Triangle</span>
+      <button class="dial-btn" id="next-sound">▶</button>
     </div>
   </div>
 </div>
