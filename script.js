@@ -241,7 +241,7 @@ const blacksEl = document.getElementById('blacks');
 let whiteKeysPhysical = [];
 let blackKeysPhysical = [];
 
-const keyNoteMap = {
+const keyNoteMapBlue = {
   'z':'C3', 'x':'D3', 'c':'E3', 'v':'F3', 'b':'G3', 'n':'A3', 'm':'B3',
   ',':'C4', '.':'D4', '/':'E4',
   'q':'C4', 'w':'D4', 'e':'E4', 'r':'F4', 't':'G4', 'y':'A4', 'u':'B4',
@@ -250,6 +250,21 @@ const keyNoteMap = {
   'l':'Db4', ';':'Eb4',
   '2':'Db4', '3':'Eb4', '5':'Gb4', '6':'Ab4', '7':'Bb4',
   '9':'Db5', '0':'Eb5',
+};
+
+const keyNoteMapGreen = {
+  // Bottom row: C3 to E4
+  'z':'C3', 'x':'D3', 'c':'E3', 'v':'F3', 'b':'G3', 'n':'A3', 'm':'B3',
+  ',':'C4', '.':'D4', '/':'E4',
+  // Middle row: C4 to E5
+  'a':'C4', 's':'D4', 'd':'E4', 'f':'F4', 'g':'G4', 'h':'A4', 'j':'B4',
+  'k':'C5', 'l':'D5', ';':'E5',
+  // Top row: C5 to E6
+  'q':'C5', 'w':'D5', 'e':'E5', 'r':'F5', 't':'G5', 'y':'A5', 'u':'B5',
+  'i':'C6', 'o':'D6', 'p':'E6',
+  // Number row: C6 to E7
+  '1':'C6', '2':'D6', '3':'E6', '4':'F6', '5':'G6', '6':'A6', '7':'B6',
+  '8':'C7', '9':'D7', '0':'E7',
 };
 
 function drawKeyboard(numOctaves = 1) {
@@ -418,17 +433,34 @@ function pressVisual(note, pressed, octaveOffset = 0) {
 }
 
 const downKeys = new Map();
-function keyToNote(key) { return keyNoteMap[key] || null; }
+function keyToNote(key) {
+  const layoutMode = toggleStates.layout[currentToggleStates.layout];
+  if (layoutMode === 't-green') {
+    return keyNoteMapGreen[key] || null;
+  } else { // 't-blue'
+    return keyNoteMapBlue[key] || null;
+  }
+}
 
 document.addEventListener('keydown', (e) => {
   if (e.repeat || downKeys.has(e.code)) return;
+
+  const layoutMode = toggleStates.layout[currentToggleStates.layout];
   const isShifted = e.shiftKey || e.getModifierState("CapsLock");
   let key = e.key.toLowerCase();
   const note = keyToNote(key);
   if (!note) return;
+
   if (ctx.state !== 'running') ctx.resume();
-  const octaveOffset = isShifted ? 2 : 0;
-  downKeys.set(e.code, { note, shifted: isShifted });
+
+  let octaveOffset = 0;
+  let useShift = false;
+  if (layoutMode === 't-blue') {
+    octaveOffset = isShifted ? 2 : 0;
+    useShift = isShifted;
+  }
+  
+  downKeys.set(e.code, { note, shifted: useShift });
   pressVisual(note, true, octaveOffset);
   startNote(note, 0.2, octaveOffset);
 });
@@ -437,8 +469,10 @@ document.addEventListener('keyup', (e) => {
   const downKeyInfo = downKeys.get(e.code);
   if (!downKeyInfo) return;
   downKeys.delete(e.code);
+
   const { note, shifted } = downKeyInfo;
-  const octaveOffset = shifted ? 2 : 0;
+  const octaveOffset = shifted ? 2 : 0; // The `shifted` boolean is now correctly set by keydown
+
   pressVisual(note, false, octaveOffset);
   const finalNote = note.slice(0,-1) + (parseInt(note.at(-1), 10) + octaveOffset);
   stopNote(finalNote);
@@ -506,7 +540,7 @@ const toggleStates = {
   color: ['deactivated', 't-green', 't-blue'],
   names: ['deactivated', 't-yellow', 't-green', 't-blue'],
   bindings: ['deactivated', 't-blue'],
-  layout: ['deactivated', 't-green', 't-blue']
+  layout: ['t-green', 't-blue']
 };
 
 const currentToggleStates = {
@@ -520,6 +554,12 @@ function setupToggles() {
   for (const toggleName in toggleStates) {
     const button = document.getElementById(`toggle-${toggleName}`);
     if (button) {
+      // Initialize button state visually
+      const initialState = toggleStates[toggleName][currentToggleStates[toggleName]];
+      if (initialState && initialState !== 'deactivated') {
+        button.classList.add(initialState);
+      }
+
       button.addEventListener('click', () => {
         const states = toggleStates[toggleName];
         let currentIndex = currentToggleStates[toggleName];
