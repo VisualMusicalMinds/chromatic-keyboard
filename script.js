@@ -257,28 +257,31 @@ function drawKeyboard(numOctaves = 1) {
   blacksEl.innerHTML = '';
   whiteKeysPhysical = [];
   blackKeysPhysical = [];
+  
+  const colorMode = toggleStates.color[currentToggleStates.color];
 
   const startOctave = 3;
-  const noteOrder = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
-  const fullKeyboard = [];
+    const noteOrder = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+    const fullKeyboard = [];
 
-  for (let o = 0; o < numOctaves + 1; o++) {
-      for(const noteName of noteOrder) {
-          fullKeyboard.push(noteName + (startOctave + o));
-      }
+    for (let o = 0; o < numOctaves + 1; o++) {
+        for(const noteName of noteOrder) {
+            fullKeyboard.push(noteName + (startOctave + o));
+        }
+    }
+
+    const endNote = 'E' + (startOctave + numOctaves);
+    const endIndex = fullKeyboard.indexOf(endNote);
+    const finalKeyboard = fullKeyboard.slice(0, endIndex + 1);
+    
+    finalKeyboard.forEach(note => {
+        if (note.includes('#') || note.includes('b')) {
+            blackKeysPhysical.push(note);
+        } else {
+            whiteKeysPhysical.push(note);
+        }
+    });
   }
-
-  const endNote = 'E' + (startOctave + numOctaves);
-  const endIndex = fullKeyboard.indexOf(endNote);
-  const finalKeyboard = fullKeyboard.slice(0, endIndex + 1);
-  
-  finalKeyboard.forEach(note => {
-      if (note.includes('#') || note.includes('b')) {
-          blackKeysPhysical.push(note);
-      } else {
-          whiteKeysPhysical.push(note);
-      }
-  });
   
   const blackBetweenIndex = {};
   blackKeysPhysical.forEach(note => {
@@ -311,9 +314,14 @@ function drawKeyboard(numOctaves = 1) {
       div.style.left = `${i * whiteKeyWidth}px`;
       div.dataset.note = note;
       const noteName = note.slice(0, -1);
-      if (noteLightColors[noteName]) {
-        div.style.backgroundColor = noteLightColors[noteName];
+
+      // Apply color based on mode
+      if (colorMode === 't-green') {
+        div.style.backgroundColor = noteLightColors[noteName] || '#fff';
+      } else {
+        div.style.backgroundColor = '#fff';
       }
+      
       const label = document.createElement('div');
       label.className = 'key-label';
       label.textContent = noteName;
@@ -335,6 +343,16 @@ function drawKeyboard(numOctaves = 1) {
       div.style.left = `${x}px`;
       div.dataset.note = note;
       const pc = note.slice(0, -1);
+
+      // Apply color based on mode
+      if (colorMode === 't-green') {
+        div.style.background = 'linear-gradient(#111, #333)';
+      } else {
+        div.style.background = '#fff';
+        div.style.border = '1px solid #999';
+        div.style.color = '#000'; // Make label visible on white
+      }
+
       const label = document.createElement('div');
       label.className = 'key-label';
       label.innerHTML = blackKeyDisplayMap[pc] || '';
@@ -357,22 +375,33 @@ function pressVisual(note, pressed, octaveOffset = 0) {
   el.classList.toggle('pressed', pressed);
 
   const noteName = finalNote.slice(0, -1);
+  const colorMode = toggleStates.color[currentToggleStates.color];
+  const isWhiteKey = el.classList.contains('white-key');
 
-  // Handle white keys
-  if (el.classList.contains('white-key')) {
-    if (noteColors[noteName] && noteLightColors[noteName]) {
-      el.style.backgroundColor = pressed ? noteColors[noteName] : noteLightColors[noteName];
-    }
-  }
-  // Handle black keys
-  else if (el.classList.contains('black-key')) {
-    if (pressed) {
-      if (blackNoteColors[noteName]) {
-        el.style.background = blackNoteColors[noteName];
+  if (pressed) {
+    if (colorMode === 'deactivated') {
+      el.style.background = '#d3d3d3';
+    } else { // 't-green' or 't-blue'
+      if (isWhiteKey) {
+        el.style.backgroundColor = noteColors[noteName] || '#fff';
+      } else {
+        el.style.background = blackNoteColors[noteName] || '#333';
       }
-    } else {
-      // Reset to original gradient by clearing the inline style
-      el.style.background = '';
+    }
+  } else { // Releasing key
+    if (colorMode === 't-green') {
+      if (isWhiteKey) {
+        el.style.backgroundColor = noteLightColors[noteName] || '#fff';
+      } else {
+        el.style.background = ''; // Reset to CSS gradient
+      }
+    } else { // 'deactivated' or 't-blue'
+      if (isWhiteKey) {
+        el.style.backgroundColor = '#fff';
+      } else {
+        // This was set to white in drawKeyboard, so reset to that
+        el.style.background = '#fff'; 
+      }
     }
   }
 }
@@ -463,7 +492,7 @@ octaveToggleOptions.forEach(option => {
 
 // -------- TOGGLE GRID LOGIC --------
 const toggleStates = {
-  color: ['deactivated', 't-green', 't-yellow'],
+  color: ['deactivated', 't-green', 't-blue'],
   names: ['deactivated', 't-yellow', 't-green', 't-blue'],
   bindings: ['deactivated', 't-blue'],
   layout: ['deactivated', 't-green', 't-blue']
@@ -493,6 +522,13 @@ function setupToggles() {
         button.className = 'toggle-btn'; 
         if (newState !== 'deactivated') {
           button.classList.add(newState);
+        }
+
+        // If the color toggle was changed, redraw the keyboard
+        if (toggleName === 'color') {
+          const activeOctaveEl = document.querySelector('.toggle-option.active');
+          const numOctaves = activeOctaveEl ? parseInt(activeOctaveEl.dataset.octaves, 10) : 1;
+          drawKeyboard(numOctaves);
         }
       });
     }
