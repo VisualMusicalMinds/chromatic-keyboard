@@ -327,47 +327,57 @@ const keyBindings = {
 };
 
 function populateDynamicBindings() {
-  // For modes 3 and 4, bindings are 1-to-1 with the lighting-up note.
+  // Generate bindings for green 3 & 4
   for (let octaves = 3; octaves <= 4; octaves++) {
-    for (const layout of ['t-green', 't-blue']) {
-      const bindings = {};
-      for (const key in keyData) {
-        const keyInfo = (layout === 't-green') ? keyData[key].green : keyData[key].blue;
-        if (keyInfo) {
-          const note = `${keyInfo.note}${keyInfo.octave}`;
-          if (!bindings[note]) bindings[note] = '';
-          bindings[note] += key;
-        }
+    const bindings = {};
+    for (const key in keyData) {
+      const keyInfo = keyData[key].green;
+      if (keyInfo) {
+        const note = `${keyInfo.note}${keyInfo.octave}`;
+        if (!bindings[note]) bindings[note] = '';
+        bindings[note] += key;
       }
-      keyBindings[layout][octaves] = bindings;
     }
+    keyBindings['t-green'][octaves] = bindings;
   }
 
-  // Special handling for blue layout shifted keys (adds 2 to octave)
-  for (let octaves = 1; octaves <= 4; octaves++) {
-    const bindings = keyBindings['t-blue'][octaves];
-    const shiftedBindings = {};
+  // Generate un-shifted bindings for blue 3 & 4
+  for (let octaves = 3; octaves <= 4; octaves++) {
+    const bindings = {};
     for (const key in keyData) {
       const keyInfo = keyData[key].blue;
       if (keyInfo) {
-        // Shifted notes for blue are octave + 2
-        const shiftedNote = `${keyInfo.note}${keyInfo.octave + 2}`;
-        const displayKey = key.toUpperCase();
-        if (!bindings[shiftedNote] && !shiftedBindings[shiftedNote]) {
-           shiftedBindings[shiftedNote] = '';
-        }
-        if(shiftedBindings[shiftedNote] !== undefined){
-            shiftedBindings[shiftedNote] += displayKey;
-        }
+        const note = `${keyInfo.note}${keyInfo.octave}`;
+        if (!bindings[note]) bindings[note] = '';
+        bindings[note] += key;
       }
     }
-    // Merge shifted bindings into the main blue bindings
-    for(const note in shiftedBindings){
-        if(bindings[note]){
-            bindings[note] += shiftedBindings[note];
-        } else {
-            bindings[note] = shiftedBindings[note];
-        }
+    keyBindings['t-blue'][octaves] = bindings;
+  }
+
+  // Calculate shifted blue bindings just once
+  const shiftedBlueBindings = {};
+  for (const key in keyData) {
+    const keyInfo = keyData[key].blue;
+    if (keyInfo) {
+      const shiftedNote = `${keyInfo.note}${keyInfo.octave + 2}`;
+      const displayKey = key.toUpperCase();
+      if (!shiftedBlueBindings[shiftedNote]) {
+        shiftedBlueBindings[shiftedNote] = '';
+      }
+      shiftedBlueBindings[shiftedNote] += displayKey;
+    }
+  }
+
+  // Merge the shifted bindings into all blue layouts
+  for (let octaves = 1; octaves <= 4; octaves++) {
+    const targetBindings = keyBindings['t-blue'][octaves];
+    for (const note in shiftedBlueBindings) {
+      if (targetBindings[note]) {
+        targetBindings[note] += shiftedBlueBindings[note];
+      } else {
+        targetBindings[note] = shiftedBlueBindings[note];
+      }
     }
   }
 }
