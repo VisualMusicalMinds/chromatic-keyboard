@@ -693,13 +693,23 @@ function getSpecialKeyInfo(key) {
     return specialKeyGroups[key] || null;
 }
 
+const shiftKeyMap = {
+    '@': '2', '#': '3', '%': '5', '^': '6', '&': '7', '(': '9', ')': '0',
+    '<': ',', '>': '.', '?': '/', ':': ';'
+};
+
 document.addEventListener('keydown', (e) => {
   if (e.repeat || downKeys.has(e.code)) return;
 
   const layoutMode = toggleStates.layout[currentToggleStates.layout];
   const octaves = getActiveOctaveCount();
   const isShifted = e.shiftKey || e.getModifierState("CapsLock");
-  const key = e.key.toLowerCase();
+  
+  let key = e.key;
+  if (e.shiftKey && shiftKeyMap[key]) {
+      key = shiftKeyMap[key];
+  }
+  key = key.toLowerCase();
 
   const mapping = getNoteMapping(key, layoutMode, octaves, isShifted);
   if (!mapping) return;
