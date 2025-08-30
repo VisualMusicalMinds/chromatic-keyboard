@@ -20,73 +20,59 @@ body {
 .controls-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 40px;
   margin-bottom: 20px;
   width: 100%;
   max-width: 500px;
-  height: 100px; /* Shortened height */
+  height: 100px;
 }
 
-.sound-control {
+.main-controls {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.knob-container {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  margin-bottom: 10px;
-}
-
-.knob {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(145deg, #555, #222);
-  border-radius: 50%;
-  border: 3px solid #111;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.5), inset 0 2px 2px rgba(255,255,255,0.1);
-  position: relative;
-  cursor: pointer;
-  transform: rotate(-120deg); /* Start at 10 o'clock */
-  transition: transform 0.3s ease-out;
-}
-
-.knob::after {
-  content: '';
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background: #fff;
-  border-radius: 50%;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  box-shadow: 0 0 5px rgba(255,255,255,0.7);
-}
-
-.sound-labels {
-  display: flex;
-  gap: 15px;
-  font-size: 12px;
-  color: #ccc;
-}
-
-.sound-labels span {
-  opacity: 0.6;
-  transition: opacity 0.2s;
-}
-
-.sound-labels span.active {
-  opacity: 1;
-  font-weight: bold;
+  gap: 10px;
 }
 
 .octave-control {
   display: flex;
   align-items: center;
+}
+
+.sound-dial-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #333;
+  border-radius: 18px;
+  padding: 4px;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.4);
+  width: 160px;
+  height: 35px;
+  box-sizing: border-box;
+}
+
+#sound-name-display {
+  flex-grow: 1;
+  text-align: center;
+  font-weight: bold;
+  color: #fff;
+  font-size: 14px;
+  text-transform: capitalize;
+  user-select: none;
+}
+
+.dial-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 12px;
+  transition: color 0.2s;
+}
+
+.dial-btn:hover {
+  color: #fff;
 }
 
 .toggle-switch {
