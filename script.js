@@ -237,6 +237,14 @@ const blackNoteColors = {
   'A#': '#5866ee', 'Bb': '#5866ee'
 };
 
+const blackKeyDisplayMap = {
+  'C#': 'C♯<br>D♭', 'Db': 'C♯<br>D♭',
+  'D#': 'D♯<br>E♭', 'Eb': 'D♯<br>E♭',
+  'F#': 'F♯<br>G♭', 'Gb': 'F♯<br>G♭',
+  'G#': 'G♯<br>A♭', 'Ab': 'G♯<br>A♭',
+  'A#': 'A♯<br>B♭', 'Bb': 'A♯<br>B♭'
+};
+
 // -------- LAYOUT --------
 const whitesEl = document.getElementById('whites');
 const blacksEl = document.getElementById('blacks');
@@ -316,6 +324,10 @@ function drawKeyboard(numOctaves = 1) {
       if (noteLightColors[noteName]) {
         div.style.backgroundColor = noteLightColors[noteName];
       }
+      const label = document.createElement('div');
+      label.className = 'key-label';
+      label.textContent = noteName;
+      div.appendChild(label);
       whitesEl.appendChild(div);
       div.addEventListener('mousedown', () => onPointerDown(note));
       div.addEventListener('mouseup', () => onPointerUp(note));
@@ -332,6 +344,11 @@ function drawKeyboard(numOctaves = 1) {
       const x = (leftIndex + 1) * whiteKeyWidth - (blackKeyWidth / 2);
       div.style.left = `${x}px`;
       div.dataset.note = note;
+      const pc = note.slice(0, -1);
+      const label = document.createElement('div');
+      label.className = 'key-label';
+      label.innerHTML = blackKeyDisplayMap[pc] || '';
+      div.appendChild(label);
       blacksEl.appendChild(div);
       div.addEventListener('mousedown', () => onPointerDown(note));
       div.addEventListener('mouseup', () => onPointerUp(note));
