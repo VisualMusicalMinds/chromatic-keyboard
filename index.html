@@ -9,7 +9,13 @@
 <body>
 
 <div class="controls-container">
-  <div class="main-controls">
+  <div class="toggle-grid-control">
+    <button class="toggle-btn" id="toggle-color">Color</button>
+    <button class="toggle-btn" id="toggle-names">Names</button>
+    <button class="toggle-btn" id="toggle-bindings">Bindings</button>
+    <button class="toggle-btn" id="toggle-layout">Layout</button>
+  </div>
+  <div class="instrument-controls">
     <div class="octave-control">
       <div class="toggle-switch">
         <div class="toggle-option active" data-octaves="1">1</div>
@@ -22,24 +28,6 @@
       <button class="dial-btn" id="prev-sound">◀</button>
       <span id="sound-name-display">Triangle</span>
       <button class="dial-btn" id="next-sound">▶</button>
-    </div>
-    <div class="toggle-grid-control">
-      <div class="toggle-row" id="toggle-color">
-        <span class="toggle-label">Color</span>
-        <span class="toggle-indicator"></span>
-      </div>
-      <div class="toggle-row" id="toggle-names">
-        <span class="toggle-label">Names</span>
-        <span class="toggle-indicator"></span>
-      </div>
-      <div class="toggle-row" id="toggle-bindings">
-        <span class="toggle-label">Bindings</span>
-        <span class="toggle-indicator"></span>
-      </div>
-      <div class="toggle-row" id="toggle-layout">
-        <span class="toggle-label">Layout</span>
-        <span class="toggle-indicator"></span>
-      </div>
     </div>
   </div>
 </div>
