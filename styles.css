@@ -244,6 +244,11 @@ body {
   border-color: #0062cc;
   text-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
+.toggle-btn.t-orange {
+  background-color: #FF9500;
+  border-color: #d88000;
+  text-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
 
 .key-scale-selectors {
   display: flex;
