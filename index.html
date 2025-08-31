@@ -9,11 +9,45 @@
 <body>
 
 <div class="controls-container">
+  <div class="layout-controls">
+    <div class="layout-selectors">
+      <button class="layout-btn flex-btn active">Flex</button>
+      <button class="layout-btn chromatic-btn">Chromatic</button>
+    </div>
+    <div class="key-scale-selectors">
+      <span>Key:</span>
+      <select class="key-selector">
+        <option>C</option>
+        <option>C#/Db</option>
+        <option>D</option>
+        <option>D#/Eb</option>
+        <option>E</option>
+        <option>F</option>
+        <option>F#/Gb</option>
+        <option>G</option>
+        <option>G#/Ab</option>
+        <option>A</option>
+        <option>A#/Bb</option>
+        <option>B</option>
+      </select>
+      <select class="scale-selector">
+        <option>Major</option>
+        <option>Natural Minor</option>
+        <option>Harmonic Minor</option>
+        <option>Melodic Minor</option>
+        <option>Dorian</option>
+        <option>Phrygian</option>
+        <option>Lydian</option>
+        <option>Mixolydian</option>
+        <option>Locrian</option>
+      </select>
+    </div>
+  </div>
   <div class="toggle-grid-control">
     <button class="toggle-btn" id="toggle-color">Color</button>
     <button class="toggle-btn" id="toggle-names">Names</button>
     <button class="toggle-btn" id="toggle-bindings">Bindings</button>
-    <button class="toggle-btn" id="toggle-layout">Layout</button>
+    <button class="toggle-btn" id="toggle-layout" disabled>Layout</button>
   </div>
   <div class="instrument-controls">
     <div class="octave-control">
