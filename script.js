@@ -248,6 +248,14 @@ const sharpToFlatMap = {
   'A#': 'Bb'
 };
 
+const flatToSharpMap = {
+  'Db': 'C#',
+  'Eb': 'D#',
+  'Gb': 'F#',
+  'Ab': 'G#',
+  'Bb': 'A#'
+};
+
 const scaleMappings = {
   'Major': {
     'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'E',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'A',octave:3},'m':{note:'B',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'E',octave:4},
@@ -311,7 +319,12 @@ function getNotesForScale(scaleName) {
 
     const notes = new Set();
     for (const key in scaleMap) {
-        notes.add(scaleMap[key].note);
+        let noteName = scaleMap[key].note;
+        const flatEquivalent = sharpToFlatMap[noteName];
+        if (flatEquivalent) {
+            noteName = flatEquivalent;
+        }
+        notes.add(noteName);
     }
     return notes;
 }
