@@ -598,9 +598,11 @@ function drawKeyboard(numOctaves = 1) {
 
       // Apply color based on mode
       if (colorMode === 't-green') {
-        div.style.backgroundColor = noteLightColors[noteName] || '#fff';
+        const topColor = noteLightColors[noteName] || '#fff';
+        div.style.background = `linear-gradient(to bottom, ${topColor} 50%, #fff 50%)`;
       } else {
         div.style.backgroundColor = '#fff';
+        div.style.background = ''; // Clear any lingering gradient
       }
       
       if (namesMode === 't-yellow' || namesMode === 't-green') {
@@ -701,7 +703,8 @@ function pressVisual(finalNote, pressed) {
       if (colorMode === 'deactivated') {
         el.style.backgroundColor = '#fff'; // Back to white
       } else if (colorMode === 't-green') {
-        el.style.backgroundColor = noteLightColors[noteName] || '#fff'; // Back to light color
+        const topColor = noteLightColors[noteName] || '#fff';
+        el.style.background = `linear-gradient(to bottom, ${topColor} 50%, #fff 50%)`;
       } else if (colorMode === 't-blue') {
         el.style.backgroundColor = '#fff'; // Back to white
       }
