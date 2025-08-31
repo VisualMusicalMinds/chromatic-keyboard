@@ -239,6 +239,64 @@ const blackKeyDisplayMap = {
 };
 
 // -------- LAYOUT --------
+
+const scaleMappings = {
+  'Major': {
+    'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'E',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'A',octave:3},'m':{note:'B',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'E',octave:4},
+    'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'E',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'A',octave:4},'j':{note:'B',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'E',octave:5},
+    'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'E',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'A',octave:5},'u':{note:'B',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'E',octave:6},
+    '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'E',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'A',octave:6},'7':{note:'B',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'E',octave:7}
+  },
+  'Natural Minor': {
+    'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'Eb',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'Ab',octave:3},'m':{note:'Bb',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'Eb',octave:4},
+    'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'Eb',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'Ab',octave:4},'j':{note:'Bb',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'Eb',octave:5},
+    'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'Eb',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'Ab',octave:5},'u':{note:'Bb',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'Eb',octave:6},
+    '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'Eb',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'Ab',octave:6},'7':{note:'Bb',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'Eb',octave:7}
+  },
+  'Harmonic Minor': {
+    'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'Eb',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'Ab',octave:3},'m':{note:'B',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'Eb',octave:4},
+    'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'Eb',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'Ab',octave:4},'j':{note:'B',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'Eb',octave:5},
+    'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'Eb',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'Ab',octave:5},'u':{note:'B',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'Eb',octave:6},
+    '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'Eb',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'Ab',octave:6},'7':{note:'B',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'Eb',octave:7}
+  },
+  'Melodic Minor': {
+    'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'Eb',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'A',octave:3},'m':{note:'B',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'Eb',octave:4},
+    'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'Eb',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'A',octave:4},'j':{note:'B',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'Eb',octave:5},
+    'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'Eb',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'A',octave:5},'u':{note:'B',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'Eb',octave:6},
+    '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'Eb',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'A',octave:6},'7':{note:'B',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'Eb',octave:7}
+  },
+  'Dorian': {
+    'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'Eb',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'A',octave:3},'m':{note:'Bb',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'Eb',octave:4},
+    'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'Eb',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'A',octave:4},'j':{note:'Bb',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'Eb',octave:5},
+    'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'Eb',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'A',octave:5},'u':{note:'Bb',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'Eb',octave:6},
+    '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'Eb',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'A',octave:6},'7':{note:'Bb',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'Eb',octave:7}
+  },
+  'Phrygian': {
+    'z':{note:'C',octave:3},'x':{note:'Db',octave:3},'c':{note:'Eb',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'Ab',octave:3},'m':{note:'Bb',octave:3},',':{note:'C',octave:4},'.':{note:'Db',octave:4},'/':{note:'Eb',octave:4},
+    'a':{note:'C',octave:4},'s':{note:'Db',octave:4},'d':{note:'Eb',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'Ab',octave:4},'j':{note:'Bb',octave:4},'k':{note:'C',octave:5},'l':{note:'Db',octave:5},';':{note:'Eb',octave:5},
+    'q':{note:'C',octave:5},'w':{note:'Db',octave:5},'e':{note:'Eb',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'Ab',octave:5},'u':{note:'Bb',octave:5},'i':{note:'C',octave:6},'o':{note:'Db',octave:6},'p':{note:'Eb',octave:6},
+    '1':{note:'C',octave:6},'2':{note:'Db',octave:6},'3':{note:'Eb',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'Ab',octave:6},'7':{note:'Bb',octave:6},'8':{note:'C',octave:7},'9':{note:'Db',octave:7},'0':{note:'Eb',octave:7}
+  },
+  'Lydian': {
+    'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'E',octave:3},'v':{note:'F#',octave:3},'b':{note:'G',octave:3},'n':{note:'A',octave:3},'m':{note:'B',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'E',octave:4},
+    'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'E',octave:4},'f':{note:'F#',octave:4},'g':{note:'G',octave:4},'h':{note:'A',octave:4},'j':{note:'B',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'E',octave:5},
+    'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'E',octave:5},'r':{note:'F#',octave:5},'t':{note:'G',octave:5},'y':{note:'A',octave:5},'u':{note:'B',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'E',octave:6},
+    '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'E',octave:6},'4':{note:'F#',octave:6},'5':{note:'G',octave:6},'6':{note:'A',octave:6},'7':{note:'B',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'E',octave:7}
+  },
+  'Mixolydian': {
+    'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'E',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'A',octave:3},'m':{note:'Bb',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'E',octave:4},
+    'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'E',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'A',octave:4},'j':{note:'Bb',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'E',octave:5},
+    'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'E',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'A',octave:5},'u':{note:'Bb',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'E',octave:6},
+    '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'E',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'A',octave:6},'7':{note:'Bb',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'E',octave:7}
+  },
+  'Locrian': {
+    'z':{note:'C',octave:3},'x':{note:'Db',octave:3},'c':{note:'Eb',octave:3},'v':{note:'F',octave:3},'b':{note:'Gb',octave:3},'n':{note:'Ab',octave:3},'m':{note:'Bb',octave:3},',':{note:'C',octave:4},'.':{note:'Db',octave:4},'/':{note:'Eb',octave:4},
+    'a':{note:'C',octave:4},'s':{note:'Db',octave:4},'d':{note:'Eb',octave:4},'f':{note:'F',octave:4},'g':{note:'Gb',octave:4},'h':{note:'Ab',octave:4},'j':{note:'Bb',octave:4},'k':{note:'C',octave:5},'l':{note:'Db',octave:5},';':{note:'Eb',octave:5},
+    'q':{note:'C',octave:5},'w':{note:'Db',octave:5},'e':{note:'Eb',octave:5},'r':{note:'F',octave:5},'t':{note:'Gb',octave:5},'y':{note:'Ab',octave:5},'u':{note:'Bb',octave:5},'i':{note:'C',octave:6},'o':{note:'Db',octave:6},'p':{note:'Eb',octave:6},
+    '1':{note:'C',octave:6},'2':{note:'Db',octave:6},'3':{note:'Eb',octave:6},'4':{note:'F',octave:6},'5':{note:'Gb',octave:6},'6':{note:'Ab',octave:6},'7':{note:'Bb',octave:6},'8':{note:'C',octave:7},'9':{note:'Db',octave:7},'0':{note:'Eb',octave:7}
+  }
+};
+
 const whitesEl = document.getElementById('whites');
 const blacksEl = document.getElementById('blacks');
 let whiteKeysPhysical = [];
@@ -249,53 +307,64 @@ let blackKeysPhysical = [];
 // This provides the necessary data for the dynamic note calculation logic.
 const keyData = {
   // Row 1 (Numbers)
-  '1': { green: { note: 'C', octave: 6 }, blue: null },
-  '2': { green: { note: 'D', octave: 6 }, blue: { note: 'Db', octave: 4 } },
-  '3': { green: { note: 'E', octave: 6 }, blue: { note: 'Eb', octave: 4 } },
-  '4': { green: { note: 'F', octave: 6 }, blue: null },
-  '5': { green: { note: 'G', octave: 6 }, blue: { note: 'Gb', octave: 4 } },
-  '6': { green: { note: 'A', octave: 6 }, blue: { note: 'Ab', octave: 4 } },
-  '7': { green: { note: 'B', octave: 6 }, blue: { note: 'Bb', octave: 4 } },
-  '8': { green: { note: 'C', octave: 7 }, blue: null },
-  '9': { green: { note: 'D', octave: 7 }, blue: { note: 'Db', octave: 5 } },
-  '0': { green: { note: 'E', octave: 7 }, blue: { note: 'Eb', octave: 5 } },
+  '1': { green: {}, blue: null },
+  '2': { green: {}, blue: { note: 'Db', octave: 4 } },
+  '3': { green: {}, blue: { note: 'Eb', octave: 4 } },
+  '4': { green: {}, blue: null },
+  '5': { green: {}, blue: { note: 'Gb', octave: 4 } },
+  '6': { green: {}, blue: { note: 'Ab', octave: 4 } },
+  '7': { green: {}, blue: { note: 'Bb', octave: 4 } },
+  '8': { green: {}, blue: null },
+  '9': { green: {}, blue: { note: 'Db', octave: 5 } },
+  '0': { green: {}, blue: { note: 'Eb', octave: 5 } },
 
   // Row 2 (QWERTY)
-  'q': { green: { note: 'C', octave: 5 }, blue: { note: 'C', octave: 4 } },
-  'w': { green: { note: 'D', octave: 5 }, blue: { note: 'D', octave: 4 } },
-  'e': { green: { note: 'E', octave: 5 }, blue: { note: 'E', octave: 4 } },
-  'r': { green: { note: 'F', octave: 5 }, blue: { note: 'F', octave: 4 } },
-  't': { green: { note: 'G', octave: 5 }, blue: { note: 'G', octave: 4 } },
-  'y': { green: { note: 'A', octave: 5 }, blue: { note: 'A', octave: 4 } },
-  'u': { green: { note: 'B', octave: 5 }, blue: { note: 'B', octave: 4 } },
-  'i': { green: { note: 'C', octave: 6 }, blue: { note: 'C', octave: 5 } },
-  'o': { green: { note: 'D', octave: 6 }, blue: { note: 'D', octave: 5 } },
-  'p': { green: { note: 'E', octave: 6 }, blue: { note: 'E', octave: 5 } },
+  'q': { green: {}, blue: { note: 'C', octave: 4 } },
+  'w': { green: {}, blue: { note: 'D', octave: 4 } },
+  'e': { green: {}, blue: { note: 'E', octave: 4 } },
+  'r': { green: {}, blue: { note: 'F', octave: 4 } },
+  't': { green: {}, blue: { note: 'G', octave: 4 } },
+  'y': { green: {}, blue: { note: 'A', octave: 4 } },
+  'u': { green: {}, blue: { note: 'B', octave: 4 } },
+  'i': { green: {}, blue: { note: 'C', octave: 5 } },
+  'o': { green: {}, blue: { note: 'D', octave: 5 } },
+  'p': { green: {}, blue: { note: 'E', octave: 5 } },
 
   // Row 3 (ASDF)
-  'a': { green: { note: 'C', octave: 4 }, blue: null },
-  's': { green: { note: 'D', octave: 4 }, blue: { note: 'Db', octave: 3 } },
-  'd': { green: { note: 'E', octave: 4 }, blue: { note: 'Eb', octave: 3 } },
-  'f': { green: { note: 'F', octave: 4 }, blue: null },
-  'g': { green: { note: 'G', octave: 4 }, blue: { note: 'Gb', octave: 3 } },
-  'h': { green: { note: 'A', octave: 4 }, blue: { note: 'Ab', octave: 3 } },
-  'j': { green: { note: 'B', octave: 4 }, blue: { note: 'Bb', octave: 3 } },
-  'k': { green: { note: 'C', octave: 5 }, blue: null },
-  'l': { green: { note: 'D', octave: 5 }, blue: { note: 'Db', octave: 4 } },
-  ';': { green: { note: 'E', octave: 5 }, blue: { note: 'Eb', octave: 4 } },
+  'a': { green: {}, blue: null },
+  's': { green: {}, blue: { note: 'Db', octave: 3 } },
+  'd': { green: {}, blue: { note: 'Eb', octave: 3 } },
+  'f': { green: {}, blue: null },
+  'g': { green: {}, blue: { note: 'Gb', octave: 3 } },
+  'h': { green: {}, blue: { note: 'Ab', octave: 3 } },
+  'j': { green: {}, blue: { note: 'Bb', octave: 3 } },
+  'k': { green: {}, blue: null },
+  'l': { green: {}, blue: { note: 'Db', octave: 4 } },
+  ';': { green: {}, blue: { note: 'Eb', octave: 4 } },
 
   // Row 4 (ZXCV)
-  'z': { green: { note: 'C', octave: 3 }, blue: { note: 'C', octave: 3 } },
-  'x': { green: { note: 'D', octave: 3 }, blue: { note: 'D', octave: 3 } },
-  'c': { green: { note: 'E', octave: 3 }, blue: { note: 'E', octave: 3 } },
-  'v': { green: { note: 'F', octave: 3 }, blue: { note: 'F', octave: 3 } },
-  'b': { green: { note: 'G', octave: 3 }, blue: { note: 'G', octave: 3 } },
-  'n': { green: { note: 'A', octave: 3 }, blue: { note: 'A', octave: 3 } },
-  'm': { green: { note: 'B', octave: 3 }, blue: { note: 'B', octave: 3 } },
-  ',': { green: { note: 'C', octave: 4 }, blue: { note: 'C', octave: 4 } },
-  '.': { green: { note: 'D', octave: 4 }, blue: { note: 'D', octave: 4 } },
-  '/': { green: { note: 'E', octave: 4 }, blue: { note: 'E', octave: 4 } },
+  'z': { green: {}, blue: { note: 'C', octave: 3 } },
+  'x': { green: {}, blue: { note: 'D', octave: 3 } },
+  'c': { green: {}, blue: { note: 'E', octave: 3 } },
+  'v': { green: {}, blue: { note: 'F', octave: 3 } },
+  'b': { green: {}, blue: { note: 'G', octave: 3 } },
+  'n': { green: {}, blue: { note: 'A', octave: 3 } },
+  'm': { green: {}, blue: { note: 'B', octave: 3 } },
+  ',': { green: {}, blue: { note: 'C', octave: 4 } },
+  '.': { green: {}, blue: { note: 'D', octave: 4 } },
+  '/': { green: {}, blue: { note: 'E', octave: 4 } },
 };
+
+function updateFlexLayout(scaleName) {
+  const scaleMap = scaleMappings[scaleName];
+  if (!scaleMap) return;
+
+  for (const key in scaleMap) {
+    if (keyData[key] && keyData[key].green) {
+      keyData[key].green = scaleMap[key];
+    }
+  }
+}
 
 const keyBindings = {
   't-green': {
@@ -382,6 +451,7 @@ function populateDynamicBindings() {
   }
 }
 
+updateFlexLayout('Major');
 populateDynamicBindings();
 
 function formatBinding(bindingString) {
@@ -828,6 +898,15 @@ const currentToggleStates = {
 // -------- NEW LAYOUT CONTROLS --------
 const flexBtn = document.querySelector('.flex-btn');
 const chromaticBtn = document.querySelector('.chromatic-btn');
+const scaleSelector = document.querySelector('.scale-selector');
+
+scaleSelector.addEventListener('change', (e) => {
+  const scaleName = e.target.value;
+  updateFlexLayout(scaleName);
+  const activeOctaveEl = document.querySelector('.toggle-option.active');
+  const numOctaves = activeOctaveEl ? parseInt(activeOctaveEl.dataset.octaves, 10) : 1;
+  drawKeyboard(numOctaves);
+});
 
 flexBtn.addEventListener('click', () => {
   if (currentToggleStates.layout === 't-green') return;
