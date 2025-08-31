@@ -336,6 +336,54 @@ const flexKeymaps = {
       "a":{note:'E',octave:4},"s":{note:'F#',octave:4},"d":{note:'G#',octave:4},"f":{note:'A',octave:4},"g":{note:'B',octave:4},"h":{note:'C#',octave:4},"j":{note:'D#',octave:5},"k":{note:'E',octave:5},"l":{note:'F#',octave:5},";":{note:'G#',octave:5},
       "q":{note:'E',octave:5},"w":{note:'F#',octave:5},"e":{note:'G#',octave:5},"r":{note:'A',octave:5},"t":{note:'B',octave:5},"y":{note:'C#',octave:6},"u":{note:'D#',octave:6},"i":{note:'E',octave:6},"o":{note:'F#',octave:6},"p":{note:'G#',octave:6},
       "1":{note:'E',octave:6},"2":{note:'F#',octave:6},"3":{note:'G#',octave:6},"4":{note:'A',octave:6},"5":{note:'B',octave:6},"6":{note:'C#',octave:7},"7":{note:'D#',octave:7},"8":{note:'E',octave:7},"9":{note:'F#',octave:7},"0":{note:'G#',octave:7}
+    },
+    'Natural Minor': {
+      "z":{note:'E',octave:3},"x":{note:'F#',octave:3},"c":{note:'G',octave:3},"v":{note:'A',octave:3},"b":{note:'B',octave:3},"n":{note:'C',octave:4},"m":{note:'D',octave:4},",":{note:'E',octave:4},".":{note:'F#',octave:4},"/":{note:'G',octave:4},
+      "a":{note:'E',octave:4},"s":{note:'F#',octave:4},"d":{note:'G',octave:4},"f":{note:'A',octave:4},"g":{note:'B',octave:4},"h":{note:'C',octave:4},"j":{note:'D',octave:5},"k":{note:'E',octave:5},"l":{note:'F#',octave:5},";":{note:'G',octave:5},
+      "q":{note:'E',octave:5},"w":{note:'F#',octave:5},"e":{note:'G',octave:5},"r":{note:'A',octave:5},"t":{note:'B',octave:5},"y":{note:'C',octave:6},"u":{note:'D',octave:6},"i":{note:'E',octave:6},"o":{note:'F#',octave:6},"p":{note:'G',octave:6},
+      "1":{note:'E',octave:6},"2":{note:'F#',octave:6},"3":{note:'G',octave:6},"4":{note:'A',octave:6},"5":{note:'B',octave:6},"6":{note:'C',octave:7},"7":{note:'D',octave:7},"8":{note:'E',octave:7},"9":{note:'F#',octave:7},"0":{note:'G',octave:7}
+    },
+    'Harmonic Minor': {
+      "z":{note:'E',octave:3},"x":{note:'F#',octave:3},"c":{note:'G',octave:3},"v":{note:'A',octave:3},"b":{note:'B',octave:3},"n":{note:'C',octave:4},"m":{note:'D#',octave:4},",":{note:'E',octave:4},".":{note:'F#',octave:4},"/":{note:'G',octave:4},
+      "a":{note:'E',octave:4},"s":{note:'F#',octave:4},"d":{note:'G',octave:4},"f":{note:'A',octave:4},"g":{note:'B',octave:4},"h":{note:'C',octave:4},"j":{note:'D#',octave:5},"k":{note:'E',octave:5},"l":{note:'F#',octave:5},";":{note:'G',octave:5},
+      "q":{note:'E',octave:5},"w":{note:'F#',octave:5},"e":{note:'G',octave:5},"r":{note:'A',octave:5},"t":{note:'B',octave:5},"y":{note:'C',octave:6},"u":{note:'D#',octave:6},"i":{note:'E',octave:6},"o":{note:'F#',octave:6},"p":{note:'G',octave:6},
+      "1":{note:'E',octave:6},"2":{note:'F#',octave:6},"3":{note:'G',octave:6},"4":{note:'A',octave:6},"5":{note:'B',octave:6},"6":{note:'C',octave:7},"7":{note:'D#',octave:7},"8":{note:'E',octave:7},"9":{note:'F#',octave:7},"0":{note:'G',octave:7}
+    },
+    'Melodic Minor': {
+      "z":{note:'E',octave:3},"x":{note:'F#',octave:3},"c":{note:'G',octave:3},"v":{note:'A',octave:3},"b":{note:'B',octave:3},"n":{note:'C#',octave:4},"m":{note:'D#',octave:4},",":{note:'E',octave:4},".":{note:'F#',octave:4},"/":{note:'G',octave:4},
+      "a":{note:'E',octave:4},"s":{note:'F#',octave:4},"d":{note:'G',octave:4},"f":{note:'A',octave:4},"g":{note:'B',octave:4},"h":{note:'C#',octave:4},"j":{note:'D#',octave:5},"k":{note:'E',octave:5},"l":{note:'F#',octave:5},";":{note:'G',octave:5},
+      "q":{note:'E',octave:5},"w":{note:'F#',octave:5},"e":{note:'G',octave:5},"r":{note:'A',octave:5},"t":{note:'B',octave:5},"y":{note:'C#',octave:6},"u":{note:'D#',octave:6},"i":{note:'E',octave:6},"o":{note:'F#',octave:6},"p":{note:'G',octave:6},
+      "1":{note:'E',octave:6},"2":{note:'F#',octave:6},"3":{note:'G',octave:6},"4":{note:'A',octave:6},"5":{note:'B',octave:6},"6":{note:'C#',octave:7},"7":{note:'D#',octave:7},"8":{note:'E',octave:7},"9":{note:'F#',octave:7},"0":{note:'G',octave:7}
+    },
+    'Dorian': {
+      "z":{note:'E',octave:3},"x":{note:'F#',octave:3},"c":{note:'G',octave:3},"v":{note:'A',octave:3},"b":{note:'B',octave:3},"n":{note:'C#',octave:4},"m":{note:'D',octave:4},",":{note:'E',octave:4},".":{note:'F#',octave:4},"/":{note:'G',octave:4},
+      "a":{note:'E',octave:4},"s":{note:'F#',octave:4},"d":{note:'G',octave:4},"f":{note:'A',octave:4},"g":{note:'B',octave:4},"h":{note:'C#',octave:4},"j":{note:'D',octave:5},"k":{note:'E',octave:5},"l":{note:'F#',octave:5},";":{note:'G',octave:5},
+      "q":{note:'E',octave:5},"w":{note:'F#',octave:5},"e":{note:'G',octave:5},"r":{note:'A',octave:5},"t":{note:'B',octave:5},"y":{note:'C#',octave:6},"u":{note:'D',octave:6},"i":{note:'E',octave:6},"o":{note:'F#',octave:6},"p":{note:'G',octave:6},
+      "1":{note:'E',octave:6},"2":{note:'F#',octave:6},"3":{note:'G',octave:6},"4":{note:'A',octave:6},"5":{note:'B',octave:6},"6":{note:'C#',octave:7},"7":{note:'D',octave:7},"8":{note:'E',octave:7},"9":{note:'F#',octave:7},"0":{note:'G',octave:7}
+    },
+    'Phrygian': {
+      "z":{note:'E',octave:3},"x":{note:'F',octave:3},"c":{note:'G',octave:3},"v":{note:'A',octave:3},"b":{note:'B',octave:3},"n":{note:'C',octave:4},"m":{note:'D',octave:4},",":{note:'E',octave:4},".":{note:'F',octave:4},"/":{note:'G',octave:4},
+      "a":{note:'E',octave:4},"s":{note:'F',octave:4},"d":{note:'G',octave:4},"f":{note:'A',octave:4},"g":{note:'B',octave:4},"h":{note:'C',octave:4},"j":{note:'D',octave:5},"k":{note:'E',octave:5},"l":{note:'F',octave:5},";":{note:'G',octave:5},
+      "q":{note:'E',octave:5},"w":{note:'F',octave:5},"e":{note:'G',octave:5},"r":{note:'A',octave:5},"t":{note:'B',octave:5},"y":{note:'C',octave:6},"u":{note:'D',octave:6},"i":{note:'E',octave:6},"o":{note:'F',octave:6},"p":{note:'G',octave:6},
+      "1":{note:'E',octave:6},"2":{note:'F',octave:6},"3":{note:'G',octave:6},"4":{note:'A',octave:6},"5":{note:'B',octave:6},"6":{note:'C',octave:7},"7":{note:'D',octave:7},"8":{note:'E',octave:7},"9":{note:'F',octave:7},"0":{note:'G',octave:7}
+    },
+    'Lydian': {
+      "z":{note:'E',octave:3},"x":{note:'F#',octave:3},"c":{note:'G#',octave:3},"v":{note:'A#',octave:3},"b":{note:'B',octave:3},"n":{note:'C#',octave:4},"m":{note:'D#',octave:4},",":{note:'E',octave:4},".":{note:'F#',octave:4},"/":{note:'G#',octave:4},
+      "a":{note:'E',octave:4},"s":{note:'F#',octave:4},"d":{note:'G#',octave:4},"f":{note:'A#',octave:4},"g":{note:'B',octave:4},"h":{note:'C#',octave:4},"j":{note:'D#',octave:5},"k":{note:'E',octave:5},"l":{note:'F#',octave:5},";":{note:'G#',octave:5},
+      "q":{note:'E',octave:5},"w":{note:'F#',octave:5},"e":{note:'G#',octave:5},"r":{note:'A#',octave:5},"t":{note:'B',octave:5},"y":{note:'C#',octave:6},"u":{note:'D#',octave:6},"i":{note:'E',octave:6},"o":{note:'F#',octave:6},"p":{note:'G#',octave:6},
+      "1":{note:'E',octave:6},"2":{note:'F#',octave:6},"3":{note:'G#',octave:6},"4":{note:'A#',octave:6},"5":{note:'B',octave:6},"6":{note:'C#',octave:7},"7":{note:'D#',octave:7},"8":{note:'E',octave:7},"9":{note:'F#',octave:7},"0":{note:'G#',octave:7}
+    },
+    'Mixolydian': {
+      "z":{note:'E',octave:3},"x":{note:'F#',octave:3},"c":{note:'G#',octave:3},"v":{note:'A',octave:3},"b":{note:'B',octave:3},"n":{note:'C#',octave:4},"m":{note:'D',octave:4},",":{note:'E',octave:4},".":{note:'F#',octave:4},"/":{note:'G#',octave:4},
+      "a":{note:'E',octave:4},"s":{note:'F#',octave:4},"d":{note:'G#',octave:4},"f":{note:'A',octave:4},"g":{note:'B',octave:4},"h":{note:'C#',octave:4},"j":{note:'D',octave:5},"k":{note:'E',octave:5},"l":{note:'F#',octave:5},";":{note:'G#',octave:5},
+      "q":{note:'E',octave:5},"w":{note:'F#',octave:5},"e":{note:'G#',octave:5},"r":{note:'A',octave:5},"t":{note:'B',octave:5},"y":{note:'C#',octave:6},"u":{note:'D',octave:6},"i":{note:'E',octave:6},"o":{note:'F#',octave:6},"p":{note:'G#',octave:6},
+      "1":{note:'E',octave:6},"2":{note:'F#',octave:6},"3":{note:'G#',octave:6},"4":{note:'A',octave:6},"5":{note:'B',octave:6},"6":{note:'C#',octave:7},"7":{note:'D',octave:7},"8":{note:'E',octave:7},"9":{note:'F#',octave:7},"0":{note:'G#',octave:7}
+    },
+    'Locrian': {
+      "z":{note:'E',octave:3},"x":{note:'F',octave:3},"c":{note:'G',octave:3},"v":{note:'A',octave:3},"b":{note:'Bb',octave:3},"n":{note:'C',octave:4},"m":{note:'D',octave:4},",":{note:'E',octave:4},".":{note:'F',octave:4},"/":{note:'G',octave:4},
+      "a":{note:'E',octave:4},"s":{note:'F',octave:4},"d":{note:'G',octave:4},"f":{note:'A',octave:4},"g":{note:'Bb',octave:4},"h":{note:'C',octave:4},"j":{note:'D',octave:5},"k":{note:'E',octave:5},"l":{note:'F',octave:5},";":{note:'G',octave:5},
+      "q":{note:'E',octave:5},"w":{note:'F',octave:5},"e":{note:'G',octave:5},"r":{note:'A',octave:5},"t":{note:'Bb',octave:5},"y":{note:'C',octave:6},"u":{note:'D',octave:6},"i":{note:'E',octave:6},"o":{note:'F',octave:6},"p":{note:'G',octave:6},
+      "1":{note:'E',octave:6},"2":{note:'F',octave:6},"3":{note:'G',octave:6},"4":{note:'A',octave:6},"5":{note:'Bb',octave:6},"6":{note:'C',octave:7},"7":{note:'D',octave:7},"8":{note:'E',octave:7},"9":{note:'F',octave:7},"0":{note:'G',octave:7}
     }
   }
 };
