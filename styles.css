@@ -203,6 +203,66 @@ body {
   color: white;
 }
 
+/* --- Layout Controls --- */
+.layout-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  background: #2c2c2e;
+  border-radius: 18px;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.4);
+}
+
+.layout-selectors {
+  display: flex;
+  gap: 10px;
+}
+
+.layout-btn {
+  background-color: #48484a;
+  border: 1px solid #1c1c1e;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  flex-grow: 1;
+}
+
+.layout-btn.flex-btn.active {
+  background-color: #34C759;
+  border-color: #2ca349;
+  text-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+.layout-btn.chromatic-btn.active {
+  background-color: #007AFF;
+  border-color: #0062cc;
+  text-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+.key-scale-selectors {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ccc;
+  font-size: 14px;
+}
+
+.key-selector, .scale-selector {
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+
 /* --- Toggle Grid --- */
 .toggle-grid-control {
   display: grid;
@@ -229,6 +289,13 @@ body {
 
 .toggle-btn:hover {
   border-color: #aaa;
+}
+
+.toggle-btn:disabled {
+  background-color: #48484a;
+  color: #888;
+  cursor: not-allowed;
+  border-color: #1c1c1e;
 }
 
 .toggle-btn.t-green {
