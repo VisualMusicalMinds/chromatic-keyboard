@@ -824,20 +824,29 @@ function getNoteMapping(key, layout, octaves, isShifted) {
   }
 
   if (layout === 't-green') {
-    // --- Flex Mode Note Lighting Logic ---
     const baseOctave = baseNoteOctaves[note];
+    const specialKey = getSpecialKeyInfo(key);
+
     if (baseOctave === undefined) {
       console.warn(`No base octave found for note ${note}`);
     } else {
       if (octaves === 1) {
-        noteToLightUp = `${note}${baseOctave}`;
+        let lightUpOctave = baseOctave;
+        if (specialKey) {
+          lightUpOctave += specialKey.octaveIncrement;
+        }
+        noteToLightUp = `${note}${lightUpOctave}`;
       } else if (octaves === 2) {
-        const row = getKeyRow(key);
         let lightUpOctave;
-        if (row === 'z' || row === 'q') {
-          lightUpOctave = baseOctave;
-        } else { // 'a' or '1' rows
-          lightUpOctave = baseOctave + 1;
+        if (specialKey) {
+          lightUpOctave = baseOctave + specialKey.octaveIncrement;
+        } else {
+          const row = getKeyRow(key);
+          if (row === 'z' || row === 'q') {
+            lightUpOctave = baseOctave;
+          } else { // 'a' or '1' rows
+            lightUpOctave = baseOctave + 1;
+          }
         }
         noteToLightUp = `${note}${lightUpOctave}`;
       }
@@ -862,18 +871,18 @@ function getKeyRow(key) {
 }
 
 const specialKeyGroups = {
-    ',': { group: 'comma', note: 'C'},
-    '.': { group: 'comma', note: 'D'},
-    '/': { group: 'comma', note: 'E'},
-    'k': { group: 'k', note: 'C'},
-    'l': { group: 'k', note: 'D'},
-    ';': { group: 'k', note: 'E'},
-    'i': { group: 'i', note: 'C'},
-    'o': { group: 'i', note: 'D'},
-    'p': { group: 'i', note: 'E'},
-    '8': { group: '8', note: 'C'},
-    '9': { group: '8', note: 'D'},
-    '0': { group: '8', note: 'E'},
+    ',': { group: 'comma', octaveIncrement: 1 },
+    '.': { group: 'comma', octaveIncrement: 1 },
+    '/': { group: 'comma', octaveIncrement: 1 },
+    'k': { group: 'k', octaveIncrement: 2 },
+    'l': { group: 'k', octaveIncrement: 2 },
+    ';': { group: 'k', octaveIncrement: 2 },
+    'i': { group: 'i', octaveIncrement: 3 },
+    'o': { group: 'i', octaveIncrement: 3 },
+    'p': { group: 'i', octaveIncrement: 3 },
+    '8': { group: '8', octaveIncrement: 4 },
+    '9': { group: '8', octaveIncrement: 4 },
+    '0': { group: '8', octaveIncrement: 4 },
 };
 
 function getSpecialKeyInfo(key) {
