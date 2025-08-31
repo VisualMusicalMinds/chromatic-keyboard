@@ -461,7 +461,12 @@ function drawKeyboard(numOctaves = 1) {
 
       // Apply color based on mode
       if (colorMode === 't-green') {
-        div.style.backgroundColor = noteLightColors[noteName] || '#fff';
+        const color = noteColors[noteName] || '#fff';
+        if (color !== '#fff') {
+          div.style.background = `linear-gradient(to bottom, ${color} 50%, #fff 50%)`;
+        } else {
+          div.style.backgroundColor = '#fff';
+        }
       } else {
         div.style.backgroundColor = '#fff';
       }
@@ -471,13 +476,6 @@ function drawKeyboard(numOctaves = 1) {
         label.className = 'key-label';
         label.textContent = noteName;
         
-        // Set text color based on the Color toggle state
-        if (colorMode === 't-green') {
-          label.style.color = 'white';
-        } else { // 'deactivated' or 't-blue'
-          label.style.color = 'black';
-        }
-
         div.appendChild(label);
       }
 
@@ -564,7 +562,12 @@ function pressVisual(finalNote, pressed) {
       if (colorMode === 'deactivated') {
         el.style.backgroundColor = '#fff'; // Back to white
       } else if (colorMode === 't-green') {
-        el.style.backgroundColor = noteLightColors[noteName] || '#fff'; // Back to light color
+        const color = noteColors[noteName] || '#fff';
+        if (color !== '#fff') {
+          el.style.background = `linear-gradient(to bottom, ${color} 50%, #fff 50%)`;
+        } else {
+          el.style.backgroundColor = '#fff';
+        }
       } else if (colorMode === 't-blue') {
         el.style.backgroundColor = '#fff'; // Back to white
       }
