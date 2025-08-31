@@ -305,6 +305,17 @@ const scaleMappings = {
   }
 };
 
+function getNotesForScale(scaleName) {
+    const scaleMap = scaleMappings[scaleName];
+    if (!scaleMap) return new Set();
+
+    const notes = new Set();
+    for (const key in scaleMap) {
+        notes.add(scaleMap[key].note);
+    }
+    return notes;
+}
+
 const whitesEl = document.getElementById('whites');
 const blacksEl = document.getElementById('blacks');
 let whiteKeysPhysical = [];
@@ -483,6 +494,12 @@ function drawKeyboard(numOctaves = 1) {
   const bindingsMode = toggleStates.bindings[currentToggleStates.bindings];
   const layoutMode = currentToggleStates.layout;
 
+  let notesInCurrentScale = null;
+  if (namesMode === 't-orange') {
+    const currentScaleName = document.querySelector('.scale-selector').value;
+    notesInCurrentScale = getNotesForScale(currentScaleName);
+  }
+
   const startOctave = 3;
     const noteOrder = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
     const fullKeyboard = [];
@@ -537,7 +554,6 @@ function drawKeyboard(numOctaves = 1) {
       div.dataset.note = note;
       const noteName = note.slice(0, -1);
 
-      // Apply color based on mode
       if (colorMode === 't-green') {
         const color = noteColors[noteName] || '#fff';
         if (color !== '#fff') {
@@ -549,11 +565,17 @@ function drawKeyboard(numOctaves = 1) {
         div.style.backgroundColor = '#fff';
       }
       
-      if (namesMode === 't-yellow' || namesMode === 't-green') {
+      let showLabel = false;
+      if (namesMode === 't-orange') {
+        showLabel = notesInCurrentScale && notesInCurrentScale.has(noteName);
+      } else if (namesMode === 't-yellow' || namesMode === 't-green') {
+        showLabel = true;
+      }
+
+      if (showLabel) {
         const label = document.createElement('div');
         label.className = 'key-label';
         label.textContent = noteName;
-        
         div.appendChild(label);
       }
 
@@ -586,9 +608,14 @@ function drawKeyboard(numOctaves = 1) {
       div.dataset.note = note;
       const pc = note.slice(0, -1);
 
-      // Black keys are always black, styled by CSS.
+      let showLabel = false;
+      if (namesMode === 't-orange') {
+        showLabel = notesInCurrentScale && notesInCurrentScale.has(pc);
+      } else if (namesMode === 't-blue' || namesMode === 't-green') {
+        showLabel = true;
+      }
 
-      if (namesMode === 't-blue' || namesMode === 't-green') {
+      if (showLabel) {
         const label = document.createElement('div');
         label.className = 'key-label';
         label.innerHTML = blackKeyDisplayMap[pc] || '';
@@ -886,7 +913,7 @@ octaveToggleOptions.forEach(option => {
 // -------- TOGGLE GRID LOGIC --------
 const toggleStates = {
   color: ['deactivated', 't-green', 't-blue'],
-  names: ['deactivated', 't-yellow', 't-green', 't-blue'],
+  names: ['deactivated', 't-yellow', 't-green', 't-blue', 't-orange'],
   bindings: ['deactivated', 't-blue'],
 };
 
