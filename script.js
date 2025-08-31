@@ -598,7 +598,7 @@ function drawKeyboard(numOctaves = 1) {
 
       // Apply color based on mode
       if (colorMode === 't-green') {
-        const topColor = noteLightColors[noteName] || '#fff';
+        const topColor = noteColors[noteName] || '#fff'; // Use the brighter color
         div.style.background = `linear-gradient(to bottom, ${topColor} 50%, #fff 50%)`;
       } else {
         // For all other modes, explicitly set background to white.
@@ -707,7 +707,7 @@ function pressVisual(finalNote, pressed) {
     } else { // Released
         switch (colorMode) {
             case 't-green':
-                const topColor = noteLightColors[noteName] || '#fff';
+                const topColor = noteColors[noteName] || '#fff'; // Use the brighter color
                 el.style.background = `linear-gradient(to bottom, ${topColor} 50%, #fff 50%)`;
                 break;
             case 't-blue':
