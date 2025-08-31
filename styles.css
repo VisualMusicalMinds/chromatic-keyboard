@@ -155,8 +155,7 @@ body {
   transform: translateX(-50%);
   font-family: Arial, sans-serif;
   font-weight: bold;
-  color: white;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  color: black;
   pointer-events: none;
   user-select: none;
   transition: bottom 0.2s;
