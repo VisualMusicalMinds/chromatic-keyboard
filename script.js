@@ -601,8 +601,9 @@ function drawKeyboard(numOctaves = 1) {
         const topColor = noteLightColors[noteName] || '#fff';
         div.style.background = `linear-gradient(to bottom, ${topColor} 50%, #fff 50%)`;
       } else {
-        div.style.backgroundColor = '#fff';
-        div.style.background = ''; // Clear any lingering gradient
+        // For all other modes, explicitly set background to white.
+        // This fixes the bug where keys would turn black.
+        div.style.background = '#fff';
       }
       
       if (namesMode === 't-yellow' || namesMode === 't-green') {
@@ -690,24 +691,31 @@ function pressVisual(finalNote, pressed) {
   const isWhiteKey = el.classList.contains('white-key');
 
   if (isWhiteKey) {
-    // === WHITE KEY LOGIC ===
+    // === WHITE KEY LOGIC (REFACTORED) ===
+    // This logic now exclusively uses the `background` property to prevent CSS conflicts.
     if (pressed) {
-      if (colorMode === 'deactivated') {
-        el.style.backgroundColor = '#d3d3d3'; // Turn grey when played
-      } else if (colorMode === 't-green') {
-        el.style.backgroundColor = noteColors[noteName] || '#fff'; // Brighter version
-      } else if (colorMode === 't-blue') {
-        el.style.backgroundColor = noteColors[noteName] || '#fff'; // Assigned color
-      }
+        switch (colorMode) {
+            case 't-green':
+            case 't-blue':
+                el.style.background = noteColors[noteName] || '#fff'; // Bright/active color
+                break;
+            case 'deactivated':
+            default:
+                el.style.background = '#d3d3d3'; // Grey when played
+                break;
+        }
     } else { // Released
-      if (colorMode === 'deactivated') {
-        el.style.backgroundColor = '#fff'; // Back to white
-      } else if (colorMode === 't-green') {
-        const topColor = noteLightColors[noteName] || '#fff';
-        el.style.background = `linear-gradient(to bottom, ${topColor} 50%, #fff 50%)`;
-      } else if (colorMode === 't-blue') {
-        el.style.backgroundColor = '#fff'; // Back to white
-      }
+        switch (colorMode) {
+            case 't-green':
+                const topColor = noteLightColors[noteName] || '#fff';
+                el.style.background = `linear-gradient(to bottom, ${topColor} 50%, #fff 50%)`;
+                break;
+            case 't-blue':
+            case 'deactivated':
+            default:
+                el.style.background = '#fff'; // Back to white
+                break;
+        }
     }
   } else {
     // === BLACK KEY LOGIC ===
