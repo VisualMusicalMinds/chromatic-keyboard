@@ -32,72 +32,9 @@ body {
 
 .instrument-controls {
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 20px;
-}
-
-.left-controls, .right-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    align-items: center;
-}
-
-.key-control {
-  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
-  background: #333;
-  border-radius: 18px;
-  padding: 4px 12px;
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.4);
-  height: 35px;
-  box-sizing: border-box;
-}
-
-.key-control label {
-  font-weight: bold;
-  font-size: 14px;
-  color: #ccc;
-  user-select: none;
-}
-
-.key-control select {
-  background: #48484a;
-  color: #fff;
-  border: 1px solid #1c1c1e;
-  border-radius: 8px;
-  padding: 4px 6px;
-  font-weight: bold;
-}
-
-.base-pitch-control {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #333;
-  border-radius: 18px;
-  padding: 4px 12px;
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.4);
-  height: 35px;
-  box-sizing: border-box;
-}
-
-.base-pitch-control label {
-  font-weight: bold;
-  font-size: 14px;
-  color: #ccc;
-  user-select: none;
-}
-
-.base-pitch-control select {
-  background: #48484a;
-  color: #fff;
-  border: 1px solid #1c1c1e;
-  border-radius: 8px;
-  padding: 4px 6px;
-  font-weight: bold;
+  gap: 15px;
 }
 
 .octave-control {
