@@ -256,75 +256,65 @@ const flatToSharpMap = {
   'Bb': 'A#'
 };
 
-const keyDisplayRanges = {
-  'C': { startNote: 'C3', endNoteBase: 'E' },
-  'D': { startNote: 'D3', endNoteBase: 'F#' },
-}
-
-const flexKeymaps = {
-  'C': {
-    'Major': {
-      'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'E',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'A',octave:3},'m':{note:'B',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'E',octave:4},
-      'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'E',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'A',octave:4},'j':{note:'B',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'E',octave:5},
-      'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'E',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'A',octave:5},'u':{note:'B',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'E',octave:6},
-      '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'E',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'A',octave:6},'7':{note:'B',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'E',octave:7}
-    },
-    'Natural Minor': {
-      'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'Eb',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'Ab',octave:3},'m':{note:'Bb',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'Eb',octave:4},
-      'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'Eb',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'Ab',octave:4},'j':{note:'Bb',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'Eb',octave:5},
-      'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'Eb',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'Ab',octave:5},'u':{note:'Bb',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'Eb',octave:6},
-      '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'Eb',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'Ab',octave:6},'7':{note:'Bb',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'Eb',octave:7}
-    },
-    'Harmonic Minor': {
-      'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'Eb',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'Ab',octave:3},'m':{note:'B',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'Eb',octave:4},
-      'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'Eb',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'Ab',octave:4},'j':{note:'B',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'Eb',octave:5},
-      'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'Eb',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'Ab',octave:5},'u':{note:'B',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'Eb',octave:6},
-      '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'Eb',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'Ab',octave:6},'7':{note:'B',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'Eb',octave:7}
-    },
-    'Melodic Minor': {
-      'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'Eb',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'A',octave:3},'m':{note:'B',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'Eb',octave:4},
-      'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'Eb',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'A',octave:4},'j':{note:'B',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'Eb',octave:5},
-      'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'Eb',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'A',octave:5},'u':{note:'B',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'Eb',octave:6},
-      '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'Eb',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'A',octave:6},'7':{note:'B',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'Eb',octave:7}
-    },
-    'Dorian': {
-      'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'Eb',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'A',octave:3},'m':{note:'Bb',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'Eb',octave:4},
-      'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'Eb',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'A',octave:4},'j':{note:'Bb',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'Eb',octave:5},
-      'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'Eb',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'A',octave:5},'u':{note:'Bb',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'Eb',octave:6},
-      '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'Eb',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'A',octave:6},'7':{note:'Bb',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'Eb',octave:7}
-    },
-    'Phrygian': {
-      'z':{note:'C',octave:3},'x':{note:'Db',octave:3},'c':{note:'Eb',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'Ab',octave:3},'m':{note:'Bb',octave:3},',':{note:'C',octave:4},'.':{note:'Db',octave:4},'/':{note:'Eb',octave:4},
-      'a':{note:'C',octave:4},'s':{note:'Db',octave:4},'d':{note:'Eb',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'Ab',octave:4},'j':{note:'Bb',octave:4},'k':{note:'C',octave:5},'l':{note:'Db',octave:5},';':{note:'Eb',octave:5},
-      'q':{note:'C',octave:5},'w':{note:'Db',octave:5},'e':{note:'Eb',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'Ab',octave:5},'u':{note:'Bb',octave:5},'i':{note:'C',octave:6},'o':{note:'Db',octave:6},'p':{note:'Eb',octave:6},
-      '1':{note:'C',octave:6},'2':{note:'Db',octave:6},'3':{note:'Eb',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'Ab',octave:6},'7':{note:'Bb',octave:6},'8':{note:'C',octave:7},'9':{note:'Db',octave:7},'0':{note:'Eb',octave:7}
-    },
-    'Lydian': {
-      'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'E',octave:3},'v':{note:'F#',octave:3},'b':{note:'G',octave:3},'n':{note:'A',octave:3},'m':{note:'B',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'E',octave:4},
-      'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'E',octave:4},'f':{note:'F#',octave:4},'g':{note:'G',octave:4},'h':{note:'A',octave:4},'j':{note:'B',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'E',octave:5},
-      'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'E',octave:5},'r':{note:'F#',octave:5},'t':{note:'G',octave:5},'y':{note:'A',octave:5},'u':{note:'B',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'E',octave:6},
-      '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'E',octave:6},'4':{note:'F#',octave:6},'5':{note:'G',octave:6},'6':{note:'A',octave:6},'7':{note:'B',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'E',octave:7}
-    },
-    'Mixolydian': {
-      'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'E',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'A',octave:3},'m':{note:'Bb',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'E',octave:4},
-      'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'E',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'A',octave:4},'j':{note:'Bb',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'E',octave:5},
-      'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'E',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'A',octave:5},'u':{note:'Bb',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'E',octave:6},
-      '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'E',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'A',octave:6},'7':{note:'Bb',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'E',octave:7}
-    },
-    'Locrian': {
-      'z':{note:'C',octave:3},'x':{note:'Db',octave:3},'c':{note:'Eb',octave:3},'v':{note:'F',octave:3},'b':{note:'Gb',octave:3},'n':{note:'Ab',octave:3},'m':{note:'Bb',octave:3},',':{note:'C',octave:4},'.':{note:'Db',octave:4},'/':{note:'Eb',octave:4},
-      'a':{note:'C',octave:4},'s':{note:'Db',octave:4},'d':{note:'Eb',octave:4},'f':{note:'F',octave:4},'g':{note:'Gb',octave:4},'h':{note:'Ab',octave:4},'j':{note:'Bb',octave:4},'k':{note:'C',octave:5},'l':{note:'Db',octave:5},';':{note:'Eb',octave:5},
-      'q':{note:'C',octave:5},'w':{note:'Db',octave:5},'e':{note:'Eb',octave:5},'r':{note:'F',octave:5},'t':{note:'Gb',octave:5},'y':{note:'Ab',octave:5},'u':{note:'Bb',octave:5},'i':{note:'C',octave:6},'o':{note:'Db',octave:6},'p':{note:'Eb',octave:6},
-      '1':{note:'C',octave:6},'2':{note:'Db',octave:6},'3':{note:'Eb',octave:6},'4':{note:'F',octave:6},'5':{note:'Gb',octave:6},'6':{note:'Ab',octave:6},'7':{note:'Bb',octave:6},'8':{note:'C',octave:7},'9':{note:'Db',octave:7},'0':{note:'Eb',octave:7}
-    }
+const scaleMappings = {
+  'Major': {
+    'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'E',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'A',octave:3},'m':{note:'B',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'E',octave:4},
+    'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'E',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'A',octave:4},'j':{note:'B',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'E',octave:5},
+    'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'E',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'A',octave:5},'u':{note:'B',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'E',octave:6},
+    '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'E',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'A',octave:6},'7':{note:'B',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'E',octave:7}
   },
-  'D': {
-    'Major': {"z":{"note":"D","octave":3},"x":{"note":"E","octave":3},"c":{"note":"F#","octave":3},"v":{"note":"G","octave":3},"b":{"note":"A","octave":3},"n":{"note":"B","octave":3},"m":{"note":"C#","octave":4},",":{"note":"D","octave":4},".":{"note":"E","octave":4},"/":{"note":"F#","octave":4},"a":{"note":"D","octave":4},"s":{"note":"E","octave":4},"d":{"note":"F#","octave":4},"f":{"note":"G","octave":4},"g":{"note":"A","octave":4},"h":{"note":"B","octave":4},"j":{"note":"C#","octave":5},"k":{"note":"D","octave":5},"l":{"note":"E","octave":5},";":{"note":"F#","octave":5},"q":{"note":"D","octave":5},"w":{"note":"E","octave":5},"e":{"note":"F#","octave":5},"r":{"note":"G","octave":5},"t":{"note":"A","octave":5},"y":{"note":"B","octave":5},"u":{"note":"C#","octave":6},"i":{"note":"D","octave":6},"o":{"note":"E","octave":6},"p":{"note":"F#","octave":6},"1":{"note":"D","octave":6},"2":{"note":"E","octave":6},"3":{"note":"F#","octave":6},"4":{"note":"G","octave":6},"5":{"note":"A","octave":6},"6":{"note":"B","octave":6},"7":{"note":"C#","octave":7},"8":{"note":"D","octave":7},"9":{"note":"E","octave":7},"0":{"note":"F#","octave":7}}
+  'Natural Minor': {
+    'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'Eb',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'Ab',octave:3},'m':{note:'Bb',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'Eb',octave:4},
+    'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'Eb',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'Ab',octave:4},'j':{note:'Bb',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'Eb',octave:5},
+    'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'Eb',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'Ab',octave:5},'u':{note:'Bb',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'Eb',octave:6},
+    '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'Eb',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'Ab',octave:6},'7':{note:'Bb',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'Eb',octave:7}
+  },
+  'Harmonic Minor': {
+    'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'Eb',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'Ab',octave:3},'m':{note:'B',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'Eb',octave:4},
+    'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'Eb',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'Ab',octave:4},'j':{note:'B',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'Eb',octave:5},
+    'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'Eb',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'Ab',octave:5},'u':{note:'B',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'Eb',octave:6},
+    '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'Eb',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'Ab',octave:6},'7':{note:'B',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'Eb',octave:7}
+  },
+  'Melodic Minor': {
+    'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'Eb',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'A',octave:3},'m':{note:'B',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'Eb',octave:4},
+    'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'Eb',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'A',octave:4},'j':{note:'B',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'Eb',octave:5},
+    'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'Eb',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'A',octave:5},'u':{note:'B',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'Eb',octave:6},
+    '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'Eb',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'A',octave:6},'7':{note:'B',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'Eb',octave:7}
+  },
+  'Dorian': {
+    'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'Eb',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'A',octave:3},'m':{note:'Bb',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'Eb',octave:4},
+    'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'Eb',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'A',octave:4},'j':{note:'Bb',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'Eb',octave:5},
+    'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'Eb',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'A',octave:5},'u':{note:'Bb',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'Eb',octave:6},
+    '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'Eb',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'A',octave:6},'7':{note:'Bb',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'Eb',octave:7}
+  },
+  'Phrygian': {
+    'z':{note:'C',octave:3},'x':{note:'Db',octave:3},'c':{note:'Eb',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'Ab',octave:3},'m':{note:'Bb',octave:3},',':{note:'C',octave:4},'.':{note:'Db',octave:4},'/':{note:'Eb',octave:4},
+    'a':{note:'C',octave:4},'s':{note:'Db',octave:4},'d':{note:'Eb',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'Ab',octave:4},'j':{note:'Bb',octave:4},'k':{note:'C',octave:5},'l':{note:'Db',octave:5},';':{note:'Eb',octave:5},
+    'q':{note:'C',octave:5},'w':{note:'Db',octave:5},'e':{note:'Eb',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'Ab',octave:5},'u':{note:'Bb',octave:5},'i':{note:'C',octave:6},'o':{note:'Db',octave:6},'p':{note:'Eb',octave:6},
+    '1':{note:'C',octave:6},'2':{note:'Db',octave:6},'3':{note:'Eb',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'Ab',octave:6},'7':{note:'Bb',octave:6},'8':{note:'C',octave:7},'9':{note:'Db',octave:7},'0':{note:'Eb',octave:7}
+  },
+  'Lydian': {
+    'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'E',octave:3},'v':{note:'F#',octave:3},'b':{note:'G',octave:3},'n':{note:'A',octave:3},'m':{note:'B',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'E',octave:4},
+    'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'E',octave:4},'f':{note:'F#',octave:4},'g':{note:'G',octave:4},'h':{note:'A',octave:4},'j':{note:'B',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'E',octave:5},
+    'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'E',octave:5},'r':{note:'F#',octave:5},'t':{note:'G',octave:5},'y':{note:'A',octave:5},'u':{note:'B',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'E',octave:6},
+    '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'E',octave:6},'4':{note:'F#',octave:6},'5':{note:'G',octave:6},'6':{note:'A',octave:6},'7':{note:'B',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'E',octave:7}
+  },
+  'Mixolydian': {
+    'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'E',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'A',octave:3},'m':{note:'Bb',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'E',octave:4},
+    'a':{note:'C',octave:4},'s':{note:'D',octave:4},'d':{note:'E',octave:4},'f':{note:'F',octave:4},'g':{note:'G',octave:4},'h':{note:'A',octave:4},'j':{note:'Bb',octave:4},'k':{note:'C',octave:5},'l':{note:'D',octave:5},';':{note:'E',octave:5},
+    'q':{note:'C',octave:5},'w':{note:'D',octave:5},'e':{note:'E',octave:5},'r':{note:'F',octave:5},'t':{note:'G',octave:5},'y':{note:'A',octave:5},'u':{note:'Bb',octave:5},'i':{note:'C',octave:6},'o':{note:'D',octave:6},'p':{note:'E',octave:6},
+    '1':{note:'C',octave:6},'2':{note:'D',octave:6},'3':{note:'E',octave:6},'4':{note:'F',octave:6},'5':{note:'G',octave:6},'6':{note:'A',octave:6},'7':{note:'Bb',octave:6},'8':{note:'C',octave:7},'9':{note:'D',octave:7},'0':{note:'E',octave:7}
+  },
+  'Locrian': {
+    'z':{note:'C',octave:3},'x':{note:'Db',octave:3},'c':{note:'Eb',octave:3},'v':{note:'F',octave:3},'b':{note:'Gb',octave:3},'n':{note:'Ab',octave:3},'m':{note:'Bb',octave:3},',':{note:'C',octave:4},'.':{note:'Db',octave:4},'/':{note:'Eb',octave:4},
+    'a':{note:'C',octave:4},'s':{note:'Db',octave:4},'d':{note:'Eb',octave:4},'f':{note:'F',octave:4},'g':{note:'Gb',octave:4},'h':{note:'Ab',octave:4},'j':{note:'Bb',octave:4},'k':{note:'C',octave:5},'l':{note:'Db',octave:5},';':{note:'Eb',octave:5},
+    'q':{note:'C',octave:5},'w':{note:'Db',octave:5},'e':{note:'Eb',octave:5},'r':{note:'F',octave:5},'t':{note:'Gb',octave:5},'y':{note:'Ab',octave:5},'u':{note:'Bb',octave:5},'i':{note:'C',octave:6},'o':{note:'Db',octave:6},'p':{note:'Eb',octave:6},
+    '1':{note:'C',octave:6},'2':{note:'Db',octave:6},'3':{note:'Eb',octave:6},'4':{note:'F',octave:6},'5':{note:'Gb',octave:6},'6':{note:'Ab',octave:6},'7':{note:'Bb',octave:6},'8':{note:'C',octave:7},'9':{note:'Db',octave:7},'0':{note:'Eb',octave:7}
   }
 };
 
-function getNotesForScale(keyName, scaleName) {
-    const scaleMap = flexKeymaps[keyName]?.[scaleName];
+function getNotesForScale(scaleName) {
+    const scaleMap = scaleMappings[scaleName];
     if (!scaleMap) return new Set();
 
     const notes = new Set();
@@ -397,13 +387,9 @@ const keyData = {
   '/': { green: {}, blue: { note: 'E', octave: 4 } },
 };
 
-function updateFlexLayout(keyName, scaleName) {
-  const scaleMap = flexKeymaps[keyName]?.[scaleName];
-  if (!scaleMap) {
-    // Maybe default to C Major if the map doesn't exist, or just clear the layout
-    console.warn(`No keymap found for ${keyName} ${scaleName}`);
-    return;
-  }
+function updateFlexLayout(scaleName) {
+  const scaleMap = scaleMappings[scaleName];
+  if (!scaleMap) return;
 
   for (const key in scaleMap) {
     if (keyData[key] && keyData[key].green) {
@@ -497,7 +483,7 @@ function populateDynamicBindings() {
   }
 }
 
-updateFlexLayout('C', 'Major');
+updateFlexLayout('Major');
 populateDynamicBindings();
 
 function formatBinding(bindingString) {
@@ -523,36 +509,22 @@ function drawKeyboard(numOctaves = 1) {
   const focusMode = toggleStates.focus[currentToggleStates.focus];
 
   // Get notes for the current scale, used for both Orange Names and Focus modes.
-  const currentKeyName = document.querySelector('.key-selector').value;
   const currentScaleName = document.querySelector('.scale-selector').value;
-  const notesInCurrentScale = getNotesForScale(currentKeyName, currentScaleName);
+  const notesInCurrentScale = getNotesForScale(currentScaleName);
 
-  const keyName = document.querySelector('.key-selector').value;
-  const range = keyDisplayRanges[keyName] || keyDisplayRanges['C']; // Default to C
-  
-  const startNote = range.startNote;
-  const startOctave = parseInt(startNote.slice(-1));
-  
-  const noteOrder = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
-  const fullKeyboard = [];
+  const startOctave = 3;
+    const noteOrder = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+    const fullKeyboard = [];
 
-  // Generate a few octaves up and down from the start octave to be safe
-  for (let o = -2; o < numOctaves + 2; o++) {
-      for(const noteName of noteOrder) {
-          fullKeyboard.push(noteName + (startOctave + o));
-      }
-  }
-
-    const endNote = range.endNoteBase + (startOctave + numOctaves);
-    const startIndex = fullKeyboard.indexOf(startNote);
-    const endIndex = fullKeyboard.indexOf(endNote);
-
-    if (startIndex === -1 || endIndex === -1) {
-      console.error("Could not find start or end notes for keyboard range.", `start: ${startNote}`, `end: ${endNote}`);
-      return;
+    for (let o = 0; o < numOctaves + 1; o++) {
+        for(const noteName of noteOrder) {
+            fullKeyboard.push(noteName + (startOctave + o));
+        }
     }
 
-    const finalKeyboard = fullKeyboard.slice(startIndex, endIndex + 1);
+    const endNote = 'E' + (startOctave + numOctaves);
+    const endIndex = fullKeyboard.indexOf(endNote);
+    const finalKeyboard = fullKeyboard.slice(0, endIndex + 1);
     
     finalKeyboard.forEach(note => {
         if (note.includes('#') || note.includes('b')) {
@@ -770,9 +742,8 @@ function getNoteMapping(key, layout, octaves, isShifted) {
   // Check for Focus mode
   const focusMode = toggleStates.focus[currentToggleStates.focus];
   if (focusMode === 't-purple') {
-    const currentKeyName = document.querySelector('.key-selector').value;
     const currentScaleName = document.querySelector('.scale-selector').value;
-    const notesInCurrentScale = getNotesForScale(currentKeyName, currentScaleName);
+    const notesInCurrentScale = getNotesForScale(currentScaleName);
     if (!notesInCurrentScale.has(note)) {
       return null; // Key is not in scale, disable binding
     }
@@ -1000,22 +971,11 @@ const currentToggleStates = {
 // -------- NEW LAYOUT CONTROLS --------
 const flexBtn = document.querySelector('.flex-btn');
 const chromaticBtn = document.querySelector('.chromatic-btn');
-const keySelector = document.querySelector('.key-selector');
 const scaleSelector = document.querySelector('.scale-selector');
-
-keySelector.addEventListener('change', (e) => {
-  const keyName = e.target.value;
-  const scaleName = scaleSelector.value;
-  updateFlexLayout(keyName, scaleName);
-  const activeOctaveEl = document.querySelector('.toggle-option.active');
-  const numOctaves = activeOctaveEl ? parseInt(activeOctaveEl.dataset.octaves, 10) : 1;
-  drawKeyboard(numOctaves);
-});
 
 scaleSelector.addEventListener('change', (e) => {
   const scaleName = e.target.value;
-  const keyName = document.querySelector('.key-selector').value;
-  updateFlexLayout(keyName, scaleName);
+  updateFlexLayout(scaleName);
   const activeOctaveEl = document.querySelector('.toggle-option.active');
   const numOctaves = activeOctaveEl ? parseInt(activeOctaveEl.dataset.octaves, 10) : 1;
   drawKeyboard(numOctaves);
