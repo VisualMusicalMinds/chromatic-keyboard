@@ -614,8 +614,10 @@ function drawKeyboard(numOctaves = 1) {
         // Set text color based on the Color toggle state
         if (colorMode === 't-green') {
           label.style.color = 'white';
+          label.style.textShadow = ''; // Reset to default stylesheet shadow
         } else { // 'deactivated' or 't-blue'
           label.style.color = 'black';
+          label.style.textShadow = 'none'; // Remove shadow for black text
         }
 
         div.appendChild(label);
