@@ -820,7 +820,7 @@ const toggleStates = {
 };
 
 const currentToggleStates = {
-  color: 0,
+  color: 1,
   names: 0,
   bindings: 0,
   layout: 0
