@@ -403,7 +403,7 @@ function drawKeyboard(numOctaves = 1) {
   const colorMode = toggleStates.color[currentToggleStates.color];
   const namesMode = toggleStates.names[currentToggleStates.names];
   const bindingsMode = toggleStates.bindings[currentToggleStates.bindings];
-  const layoutMode = toggleStates.layout[currentToggleStates.layout];
+  const layoutMode = currentToggleStates.layout;
 
   const startOctave = 3;
     const noteOrder = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
@@ -725,7 +725,7 @@ const shiftKeyMap = {
 document.addEventListener('keydown', (e) => {
   if (e.repeat || downKeys.has(e.code)) return;
 
-  const layoutMode = toggleStates.layout[currentToggleStates.layout];
+  const layoutMode = currentToggleStates.layout;
   const octaves = getActiveOctaveCount();
   const isShifted = e.shiftKey || e.getModifierState("CapsLock");
   
@@ -816,15 +816,39 @@ const toggleStates = {
   color: ['deactivated', 't-green', 't-blue'],
   names: ['deactivated', 't-yellow', 't-green', 't-blue'],
   bindings: ['deactivated', 't-blue'],
-  layout: ['t-green', 't-blue']
 };
 
 const currentToggleStates = {
   color: 1,
   names: 0,
   bindings: 0,
-  layout: 0
+  layout: 't-green' // This will be controlled by the new buttons
 };
+
+// -------- NEW LAYOUT CONTROLS --------
+const flexBtn = document.querySelector('.flex-btn');
+const chromaticBtn = document.querySelector('.chromatic-btn');
+
+flexBtn.addEventListener('click', () => {
+  if (currentToggleStates.layout === 't-green') return;
+  currentToggleStates.layout = 't-green';
+  flexBtn.classList.add('active');
+  chromaticBtn.classList.remove('active');
+  const activeOctaveEl = document.querySelector('.toggle-option.active');
+  const numOctaves = activeOctaveEl ? parseInt(activeOctaveEl.dataset.octaves, 10) : 1;
+  drawKeyboard(numOctaves);
+});
+
+chromaticBtn.addEventListener('click', () => {
+  if (currentToggleStates.layout === 't-blue') return;
+  currentToggleStates.layout = 't-blue';
+  chromaticBtn.classList.add('active');
+  flexBtn.classList.remove('active');
+  const activeOctaveEl = document.querySelector('.toggle-option.active');
+  const numOctaves = activeOctaveEl ? parseInt(activeOctaveEl.dataset.octaves, 10) : 1;
+  drawKeyboard(numOctaves);
+});
+
 
 function setupToggles() {
   for (const toggleName in toggleStates) {
