@@ -16,32 +16,59 @@
     <button class="toggle-btn" id="toggle-layout">Layout</button>
   </div>
   <div class="instrument-controls">
-    <div class="octave-control">
-      <div class="toggle-switch">
-        <div class="toggle-option active" data-octaves="1">1</div>
-        <div class="toggle-option" data-octaves="2">2</div>
-        <div class="toggle-option" data-octaves="3">3</div>
-        <div class="toggle-option" data-octaves="4">4</div>
+    <div class="left-controls">
+      <div class="octave-control">
+        <div class="toggle-switch">
+          <div class="toggle-option active" data-octaves="1">1</div>
+          <div class="toggle-option" data-octaves="2">2</div>
+          <div class="toggle-option" data-octaves="3">3</div>
+          <div class="toggle-option" data-octaves="4">4</div>
+        </div>
+      </div>
+      <div class="sound-dial-control">
+        <button class="dial-btn" id="prev-sound">◀</button>
+        <span id="sound-name-display">Triangle</span>
+        <button class="dial-btn" id="next-sound">▶</button>
       </div>
     </div>
-    <div class="sound-dial-control">
-      <button class="dial-btn" id="prev-sound">◀</button>
-      <span id="sound-name-display">Triangle</span>
-      <button class="dial-btn" id="next-sound">▶</button>
+    <div class="right-controls">
+        <div class="key-control">
+            <label for="key-note-select">Key:</label>
+            <select id="key-note-select">
+                <option value="C">C</option>
+                <option value="Db">C♯/D♭</option>
+                <option value="D">D</option>
+                <option value="Eb">D♯/E♭</option>
+                <option value="E">E</option>
+                <option value="F">F</option>
+                <option value="Gb">F♯/G♭</option>
+                <option value="G">G</option>
+                <option value="Ab">G♯/A♭</option>
+                <option value="A">A</option>
+                <option value="Bb">A♯/B♭</option>
+                <option value="B">B</option>
+            </select>
+            <select id="key-quality-select">
+                <option value="major">Major</option>
+                <option value="natural-minor">Natural Minor</option>
+                <option value="harmonic-minor">Harmonic Minor</option>
+                <option value="melodic-minor">Melodic Minor</option>
+            </select>
+        </div>
+        <div class="base-pitch-control">
+          <label for="base-pitch-select">Base Pitch:</label>
+          <select id="base-pitch-select">
+            <option value="C">C</option>
+            <option value="D">D</option>
+            <option value="E">E</option>
+            <option value="F">F</option>
+            <option value="G">G</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+          </select>
+        </div>
     </div>
-    <div class="base-pitch-control">
-      <label for="base-pitch-select">Base Pitch:</label>
-      <select id="base-pitch-select">
-        <option value="C">C</option>
-        <option value="D">D</option>
-        <option value="E">E</option>
-        <option value="F">F</option>
-        <option value="G">G</option>
-        <option value="A">A</option>
-        <option value="B">B</option>
-      </select>
-    </div>
-  </div>
+</div>
 </div>
 
 <div class="keyboard" id="kb">
