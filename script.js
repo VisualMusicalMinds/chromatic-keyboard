@@ -554,7 +554,7 @@ function pressVisual(finalNote, pressed) {
       if (colorMode === 'deactivated') {
         el.style.backgroundColor = '#d3d3d3'; // Turn grey when played
       } else if (colorMode === 't-green') {
-        el.style.backgroundColor = noteColors[noteName] || '#fff'; // Brighter version
+        el.style.background = noteColors[noteName] || '#fff'; // Brighter version
       } else if (colorMode === 't-blue') {
         el.style.backgroundColor = noteColors[noteName] || '#fff'; // Assigned color
       }
