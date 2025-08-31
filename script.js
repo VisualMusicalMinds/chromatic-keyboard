@@ -240,6 +240,14 @@ const blackKeyDisplayMap = {
 
 // -------- LAYOUT --------
 
+const sharpToFlatMap = {
+  'C#': 'Db',
+  'D#': 'Eb',
+  'F#': 'Gb',
+  'G#': 'Ab',
+  'A#': 'Bb'
+};
+
 const scaleMappings = {
   'Major': {
     'z':{note:'C',octave:3},'x':{note:'D',octave:3},'c':{note:'E',octave:3},'v':{note:'F',octave:3},'b':{note:'G',octave:3},'n':{note:'A',octave:3},'m':{note:'B',octave:3},',':{note:'C',octave:4},'.':{note:'D',octave:4},'/':{note:'E',octave:4},
@@ -669,21 +677,28 @@ function getNoteMapping(key, layout, octaves, isShifted) {
   if (!keyInfo) return null;
 
   const layoutKeyData = (layout === 't-green') ? keyInfo.green : keyInfo.blue;
-  if (!layoutKeyData) return null;
+  if (!layoutKeyData || !layoutKeyData.note) return null;
 
   const { note, octave } = layoutKeyData;
   let noteToPlay = `${note}${octave}`;
   let noteToLightUp = noteToPlay;
 
+  // --- Helper to normalize sharp names to flat names for lighting up keys ---
+  function normalizeNoteForDisplay(noteStr) {
+      const noteName = noteStr.slice(0, -1);
+      const octaveNum = noteStr.slice(-1);
+      const flatName = sharpToFlatMap[noteName];
+      return flatName ? `${flatName}${octaveNum}` : noteStr;
+  }
+
   // --- Logic for 3 or 4 octaves (default behavior) ---
   if (octaves >= 3) {
     if (layout === 't-blue' && isShifted) {
       noteToPlay = `${note}${octave + 2}`;
-      noteToLightUp = noteToPlay;
     }
-    // For this mode, the key you light up is the one you play.
-    // If shifted in blue mode, both sound and visual are moved up.
-    return { noteToPlay, noteToLightUp };
+    // For 3/4 octave mode, the key you light up is the one you play.
+    noteToLightUp = noteToPlay;
+    return { noteToPlay, noteToLightUp: normalizeNoteForDisplay(noteToLightUp) };
   }
 
   // --- Logic for 1 octave ---
@@ -691,21 +706,16 @@ function getNoteMapping(key, layout, octaves, isShifted) {
     const startOctave = 3; // The first visible octave
     
     if (layout === 't-green') {
-        const keyRow = getKeyRow(key);
-        if (!keyRow) return null;
-
-        noteToPlay = `${note}${octave}`; // Use the correct octave from keyData
+        noteToPlay = `${note}${octave}`;
         noteToLightUp = `${note}${startOctave}`;
 
-        // Override for special keys
+        // Override for special keys, using the DYNAMIC note from the scale
         const specialKey = getSpecialKeyInfo(key);
         if (specialKey) {
-            noteToLightUp = `${specialKey.note}4`;
+            noteToLightUp = `${note}4`;
         }
-
     } else { // Blue layout
         noteToPlay = `${note}${octave}`;
-        
         let lightUpOctave;
         const upperVisualKeys = [',', 'l', '.', ';', '/', 'i', '9', 'o', '0', 'p'];
         
@@ -720,41 +730,33 @@ function getNoteMapping(key, layout, octaves, isShifted) {
             noteToPlay = `${note}${octave + 2}`;
         }
     }
-    return { noteToPlay, noteToLightUp };
+    return { noteToPlay, noteToLightUp: normalizeNoteForDisplay(noteToLightUp) };
   }
 
   // --- Logic for 2 octaves ---
   if (octaves === 2) {
     if (layout === 't-green') {
-        const keyRow = getKeyRow(key);
-        if (!keyRow) return null;
-
         noteToPlay = `${note}${octave}`;
-        
-        let lightOctave = 3;
-        if (keyRow === 'a' || keyRow === '1') {
-            lightOctave = 4;
-        }
+        let lightOctave = (getKeyRow(key) === 'a' || getKeyRow(key) === '1') ? 4 : 3;
         noteToLightUp = `${note}${lightOctave}`;
 
-        // Override for special keys
+        // Override for special keys, using the DYNAMIC note from the scale
         const specialKey = getSpecialKeyInfo(key);
         if (specialKey) {
             if (specialKey.group === 'comma' || specialKey.group === 'i') {
-                noteToLightUp = `${specialKey.note}4`;
+                noteToLightUp = `${note}4`;
             } else { // k or 8 group
-                noteToLightUp = `${specialKey.note}5`;
+                noteToLightUp = `${note}5`;
             }
         }
-
     } else { // Blue layout
         noteToPlay = `${note}${octave}`;
-        noteToLightUp = noteToPlay;
+        noteToLightUp = noteToPlay; // In blue mode, light up what you play
         if (isShifted) {
             noteToPlay = `${note}${octave + 2}`;
         }
     }
-    return { noteToPlay, noteToLightUp };
+    return { noteToPlay, noteToLightUp: normalizeNoteForDisplay(noteToLightUp) };
   }
 
   return null; // Should not be reached
