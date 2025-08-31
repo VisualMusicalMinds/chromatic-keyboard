@@ -808,7 +808,14 @@ function getNoteMapping(key, layout, octaves, isShifted) {
     const currentKeyName = document.querySelector('.key-selector').value;
     const currentScaleName = document.querySelector('.scale-selector').value;
     const notesInCurrentScale = getNotesForScale(currentKeyName, currentScaleName);
-    if (!notesInCurrentScale.has(note)) {
+    
+    let noteToCheck = note;
+    const flatEquivalent = sharpToFlatMap[noteToCheck];
+    if (flatEquivalent) {
+        noteToCheck = flatEquivalent;
+    }
+
+    if (!notesInCurrentScale.has(noteToCheck)) {
       return null; // Key is not in scale, disable binding
     }
   }
