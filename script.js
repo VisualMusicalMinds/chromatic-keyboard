@@ -833,13 +833,13 @@ function getNoteMapping(key, layout, octaves, isShifted) {
       if (octaves === 1) {
         let lightUpOctave = baseOctave;
         if (specialKey) {
-          lightUpOctave += specialKey.octaveIncrement;
+          lightUpOctave = baseOctave + 1;
         }
         noteToLightUp = `${note}${lightUpOctave}`;
       } else if (octaves === 2) {
         let lightUpOctave;
         if (specialKey) {
-          lightUpOctave = baseOctave + specialKey.octaveIncrement;
+          lightUpOctave = baseOctave + ((specialKey.octaveIncrement - 1) % 2) + 1;
         } else {
           const row = getKeyRow(key);
           if (row === 'z' || row === 'q') {
