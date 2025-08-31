@@ -249,6 +249,22 @@ body {
   border-color: #d88000;
   text-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
+.toggle-btn.t-purple {
+  background-color: #AF52DE;
+  border-color: #8940ae;
+  text-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+.key-disabled {
+  background: #555 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  border: 1px solid #444 !important;
+}
+
+.key-disabled .key-label {
+  opacity: 0.3;
+}
 
 .key-scale-selectors {
   display: flex;
