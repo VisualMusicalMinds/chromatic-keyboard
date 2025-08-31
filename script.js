@@ -412,6 +412,27 @@ function updateFlexLayout(keyName, scaleName) {
   }
 }
 
+let baseNoteOctaves = {};
+
+function updateBaseNoteOctaves(keyName, scaleName) {
+  baseNoteOctaves = {};
+  const scaleMap = flexKeymaps[keyName]?.[scaleName];
+  if (!scaleMap) return;
+
+  const noteOctaves = {};
+  for (const key in scaleMap) {
+    const {note, octave} = scaleMap[key];
+    if (!noteOctaves[note]) {
+      noteOctaves[note] = [];
+    }
+    noteOctaves[note].push(octave);
+  }
+
+  for (const note in noteOctaves) {
+    baseNoteOctaves[note] = Math.min(...noteOctaves[note]);
+  }
+}
+
 const keyBindings = {
   't-green': {
     1: {
@@ -498,6 +519,7 @@ function populateDynamicBindings() {
 }
 
 updateFlexLayout('C', 'Major');
+updateBaseNoteOctaves('C', 'Major');
 populateDynamicBindings();
 
 function formatBinding(bindingString) {
@@ -794,7 +816,6 @@ function getNoteMapping(key, layout, octaves, isShifted) {
   let noteToPlay = `${note}${octave}`;
   let noteToLightUp = noteToPlay;
 
-  // --- Helper to normalize sharp names to flat names for lighting up keys ---
   function normalizeNoteForDisplay(noteStr) {
       const noteName = noteStr.slice(0, -1);
       const octaveNum = noteStr.slice(-1);
@@ -802,75 +823,34 @@ function getNoteMapping(key, layout, octaves, isShifted) {
       return flatName ? `${flatName}${octaveNum}` : noteStr;
   }
 
-  // --- Logic for 3 or 4 octaves (default behavior) ---
-  if (octaves >= 3) {
-    if (layout === 't-blue' && isShifted) {
-      noteToPlay = `${note}${octave + 2}`;
-    }
-    // For 3/4 octave mode, the key you light up is the one you play.
-    noteToLightUp = noteToPlay;
-    return { noteToPlay, noteToLightUp: normalizeNoteForDisplay(noteToLightUp) };
-  }
-
-  // --- Logic for 1 octave ---
-  if (octaves === 1) {
-    const startOctave = 3; // The first visible octave
-    
-    if (layout === 't-green') {
-        noteToPlay = `${note}${octave}`;
-        noteToLightUp = `${note}${startOctave}`;
-
-        // Override for special keys, using the DYNAMIC note from the scale
-        const specialKey = getSpecialKeyInfo(key);
-        if (specialKey) {
-            noteToLightUp = `${note}4`;
-        }
-    } else { // Blue layout
-        noteToPlay = `${note}${octave}`;
+  if (layout === 't-green') {
+    // --- Flex Mode Note Lighting Logic ---
+    const baseOctave = baseNoteOctaves[note];
+    if (baseOctave === undefined) {
+      console.warn(`No base octave found for note ${note}`);
+    } else {
+      if (octaves === 1) {
+        noteToLightUp = `${note}${baseOctave}`;
+      } else if (octaves === 2) {
+        const row = getKeyRow(key);
         let lightUpOctave;
-        const upperVisualKeys = [',', 'l', '.', ';', '/', 'i', '9', 'o', '0', 'p'];
-        
-        if (upperVisualKeys.includes(key)) {
-            lightUpOctave = 4;
-        } else {
-            lightUpOctave = 3; // Default for all other keys
+        if (row === 'z' || row === 'q') {
+          lightUpOctave = baseOctave;
+        } else { // 'a' or '1' rows
+          lightUpOctave = baseOctave + 1;
         }
         noteToLightUp = `${note}${lightUpOctave}`;
-
-        if (isShifted) {
-            noteToPlay = `${note}${octave + 2}`;
-        }
+      }
     }
-    return { noteToPlay, noteToLightUp: normalizeNoteForDisplay(noteToLightUp) };
-  }
-
-  // --- Logic for 2 octaves ---
-  if (octaves === 2) {
-    if (layout === 't-green') {
-        noteToPlay = `${note}${octave}`;
-        let lightOctave = (getKeyRow(key) === 'a' || getKeyRow(key) === '1') ? 4 : 3;
-        noteToLightUp = `${note}${lightOctave}`;
-
-        // Override for special keys, using the DYNAMIC note from the scale
-        const specialKey = getSpecialKeyInfo(key);
-        if (specialKey) {
-            if (specialKey.group === 'comma' || specialKey.group === 'i') {
-                noteToLightUp = `${note}4`;
-            } else { // k or 8 group
-                noteToLightUp = `${note}5`;
-            }
-        }
-    } else { // Blue layout
-        noteToPlay = `${note}${octave}`;
-        noteToLightUp = noteToPlay; // In blue mode, light up what you play
-        if (isShifted) {
-            noteToPlay = `${note}${octave + 2}`;
-        }
+  } else {
+    // --- Chromatic Mode Note Lighting Logic ---
+    if (octaves < 3 && isShifted) {
+        noteToPlay = `${note}${octave + 2}`;
     }
-    return { noteToPlay, noteToLightUp: normalizeNoteForDisplay(noteToLightUp) };
+    noteToLightUp = noteToPlay;
   }
-
-  return null; // Should not be reached
+  
+  return { noteToPlay, noteToLightUp: normalizeNoteForDisplay(noteToLightUp) };
 }
 
 function getKeyRow(key) {
@@ -1020,6 +1000,7 @@ keySelector.addEventListener('change', (e) => {
   const keyName = e.target.value;
   const scaleName = scaleSelector.value;
   updateFlexLayout(keyName, scaleName);
+  updateBaseNoteOctaves(keyName, scaleName);
   const activeOctaveEl = document.querySelector('.toggle-option.active');
   const numOctaves = activeOctaveEl ? parseInt(activeOctaveEl.dataset.octaves, 10) : 1;
   drawKeyboard(numOctaves);
@@ -1029,6 +1010,7 @@ scaleSelector.addEventListener('change', (e) => {
   const scaleName = e.target.value;
   const keyName = document.querySelector('.key-selector').value;
   updateFlexLayout(keyName, scaleName);
+  updateBaseNoteOctaves(keyName, scaleName);
   const activeOctaveEl = document.querySelector('.toggle-option.active');
   const numOctaves = activeOctaveEl ? parseInt(activeOctaveEl.dataset.octaves, 10) : 1;
   drawKeyboard(numOctaves);
