@@ -506,12 +506,11 @@ function drawKeyboard(numOctaves = 1) {
   const namesMode = toggleStates.names[currentToggleStates.names];
   const bindingsMode = toggleStates.bindings[currentToggleStates.bindings];
   const layoutMode = currentToggleStates.layout;
+  const focusMode = toggleStates.focus[currentToggleStates.focus];
 
-  let notesInCurrentScale = null;
-  if (namesMode === 't-orange') {
-    const currentScaleName = document.querySelector('.scale-selector').value;
-    notesInCurrentScale = getNotesForScale(currentScaleName);
-  }
+  // Get notes for the current scale, used for both Orange Names and Focus modes.
+  const currentScaleName = document.querySelector('.scale-selector').value;
+  const notesInCurrentScale = getNotesForScale(currentScaleName);
 
   const startOctave = 3;
     const noteOrder = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
@@ -567,6 +566,13 @@ function drawKeyboard(numOctaves = 1) {
       div.dataset.note = note;
       const noteName = note.slice(0, -1);
 
+      let isNoteInScale = notesInCurrentScale.has(noteName);
+      let isDisabled = focusMode === 't-purple' && layoutMode === 't-green' && !isNoteInScale;
+
+      if (isDisabled) {
+        div.classList.add('key-disabled');
+      }
+
       if (colorMode === 't-green') {
         const color = noteColors[noteName] || '#fff';
         if (color !== '#fff') {
@@ -604,11 +610,13 @@ function drawKeyboard(numOctaves = 1) {
       }
 
       whitesEl.appendChild(div);
-      div.addEventListener('mousedown', () => onPointerDown(note));
-      div.addEventListener('mouseup', () => onPointerUp(note));
-      div.addEventListener('mouseleave', () => onPointerUp(note));
-      div.addEventListener('touchstart', (ev) => { ev.preventDefault(); onPointerDown(note); }, {passive:false});
-      div.addEventListener('touchend', () => onPointerUp(note));
+      if (!isDisabled) {
+        div.addEventListener('mousedown', () => onPointerDown(note));
+        div.addEventListener('mouseup', () => onPointerUp(note));
+        div.addEventListener('mouseleave', () => onPointerUp(note));
+        div.addEventListener('touchstart', (ev) => { ev.preventDefault(); onPointerDown(note); }, {passive:false});
+        div.addEventListener('touchend', () => onPointerUp(note));
+      }
   });
 
   blackKeysPhysical.forEach((note) => {
@@ -620,6 +628,14 @@ function drawKeyboard(numOctaves = 1) {
       div.style.left = `${x}px`;
       div.dataset.note = note;
       const pc = note.slice(0, -1);
+
+      const sharpEquivalent = flatToSharpMap[pc];
+      const isNoteInScale = notesInCurrentScale.has(pc) || (sharpEquivalent && notesInCurrentScale.has(sharpEquivalent));
+      let isDisabled = focusMode === 't-purple' && layoutMode === 't-green' && !isNoteInScale;
+
+      if (isDisabled) {
+        div.classList.add('key-disabled');
+      }
 
       let showLabel = false;
       if (namesMode === 't-orange') {
@@ -647,11 +663,13 @@ function drawKeyboard(numOctaves = 1) {
       }
 
       blacksEl.appendChild(div);
-      div.addEventListener('mousedown', () => onPointerDown(note));
-      div.addEventListener('mouseup', () => onPointerUp(note));
-      div.addEventListener('mouseleave', () => onPointerUp(note));
-      div.addEventListener('touchstart', (ev) => { ev.preventDefault(); onPointerDown(note); }, {passive:false});
-      div.addEventListener('touchend', () => onPointerUp(note));
+      if (!isDisabled) {
+        div.addEventListener('mousedown', () => onPointerDown(note));
+        div.addEventListener('mouseup', () => onPointerUp(note));
+        div.addEventListener('mouseleave', () => onPointerUp(note));
+        div.addEventListener('touchstart', (ev) => { ev.preventDefault(); onPointerDown(note); }, {passive:false});
+        div.addEventListener('touchend', () => onPointerUp(note));
+      }
   });
 }
 
@@ -720,6 +738,17 @@ function getNoteMapping(key, layout, octaves, isShifted) {
   if (!layoutKeyData || !layoutKeyData.note) return null;
 
   const { note, octave } = layoutKeyData;
+
+  // Check for Focus mode
+  const focusMode = toggleStates.focus[currentToggleStates.focus];
+  if (focusMode === 't-purple' && layout === 't-green') {
+    const currentScaleName = document.querySelector('.scale-selector').value;
+    const notesInCurrentScale = getNotesForScale(currentScaleName);
+    if (!notesInCurrentScale.has(note)) {
+      return null; // Key is not in scale, disable binding
+    }
+  }
+
   let noteToPlay = `${note}${octave}`;
   let noteToLightUp = noteToPlay;
 
@@ -928,13 +957,15 @@ const toggleStates = {
   color: ['deactivated', 't-green', 't-blue'],
   names: ['deactivated', 't-yellow', 't-green', 't-blue', 't-orange'],
   bindings: ['deactivated', 't-blue'],
+  focus: ['deactivated', 't-purple'],
 };
 
 const currentToggleStates = {
   color: 1,
   names: 0,
   bindings: 0,
-  layout: 't-green' // This will be controlled by the new buttons
+  layout: 't-green', // This is for Flex/Chromatic
+  focus: 0, // This is for the new Focus toggle
 };
 
 // -------- NEW LAYOUT CONTROLS --------
