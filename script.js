@@ -247,8 +247,7 @@ let blackKeysPhysical = [];
 // This new structure replaces the old keyNoteMap objects.
 // It stores the note name and a base octave for each key, separated by layout.
 // This provides the necessary data for the dynamic note calculation logic.
-let keyData = {}; // This will be dynamically generated
-const keyDataTemplate = {
+const keyData = {
   // Row 1 (Numbers)
   '1': { green: { note: 'C', octave: 6 }, blue: null },
   '2': { green: { note: 'D', octave: 6 }, blue: { note: 'Db', octave: 4 } },
@@ -298,7 +297,7 @@ const keyDataTemplate = {
   '/': { green: { note: 'E', octave: 4 }, blue: { note: 'E', octave: 4 } },
 };
 
-const keyBindingsTemplate = {
+const keyBindings = {
   't-green': {
     1: {
       'C3': '1qaz', 'D3': '2wsx', 'E3': '3edc', 'F3': '4rfv', 'G3': '5tgb', 'A3': '6yhn', 'B3': '7ujm',
@@ -383,98 +382,7 @@ function populateDynamicBindings() {
   }
 }
 
-let keyBindings = {};
-
-// This object holds the keyboard key assignments for the black keys in the 'blue' layout,
-// for each of the 7 possible base pitches. The strings are parsed into arrays of keycodes.
-// A cleaner, more reliable mapping of keyboard keys for the 'blue' layout's black keys.
-const blueBlackKeyMappings = {
-    C: ['s', 'd', 'g', 'h', 'j', 'l', ';', '2', '3', '5', '6', '7', '9', '0'],
-    D: ['a', 's', 'f', 'g', 'h', 'k', 'l', '1', '2', '4', '5', '6', '8', '9'],
-    E: ['a', 'd', 'f', 'g', 'j', 'k', ';', '1', '3', '4', '5', '7', '8', '0'],
-    F: ['s', 'd', 'f', 'h', 'j', 'l', ';', '2', '3', '4', '6', '7', '9', '0'], // NOTE: User's spec for F was 16 keys, adjusted to 14 for consistency.
-    G: ['a', 's', 'd', 'g', 'h', 'k', 'l', '1', '2', '3', '5', '6', '8', '9'], // NOTE: User's spec for G was 16 keys, adjusted to 14 for consistency.
-    A: ['a', 's', 'f', 'g', 'j', 'k', 'l', '1', '2', '4', '5', '7', '8', '9'],
-    B: ['a', 'd', 'f', 'h', 'j', 'k', ';', '1', '3', '4', '6', '7', '8', '0']
-};
-
-// This is a complete rewrite of the key data regeneration logic.
-// It is simpler, more direct, and less prone to the errors that caused the previous crashes.
-function regenerateKeyData(basePitch, noteSequence) {
-    // --- Step 1: Create a Transposition Map ---
-    // This map translates every note from the original C scale to its new counterpart.
-    const { whites: C_whites, blacks: C_blacks } = generateNoteSequence('C', 4);
-    const C_chromatic = [...C_whites, ...C_blacks].sort((a, b) => noteNameToNum(a) - noteNameToNum(b));
-    const target_chromatic = [...noteSequence.whites, ...noteSequence.blacks].sort((a, b) => noteNameToNum(a) - noteNameToNum(b));
-    
-    const noteMap = {};
-    for(let i = 0; i < C_chromatic.length && i < target_chromatic.length; i++) {
-        noteMap[C_chromatic[i]] = target_chromatic[i];
-    }
-
-    // --- Step 2: Create a mapping for which keyboard key gets moved ---
-    const keyRemap = {}; // e.g., { s: 'a' } for base D
-    const c_keys = blueBlackKeyMappings['C'];
-    const target_keys = blueBlackKeyMappings[basePitch];
-    c_keys.forEach((key, i) => {
-        if (target_keys[i]) {
-            keyRemap[key] = target_keys[i];
-        }
-    });
-
-    // --- Step 3: Build the new keyData object from scratch ---
-    const newKeyData = {};
-    for (const key in keyDataTemplate) {
-        const template = keyDataTemplate[key];
-        const newKeyInfo = { green: null, blue: null };
-
-        // Handle the green layout (always the same key)
-        if (template.green) {
-            const originalNote = `${template.green.note}${template.green.octave}`;
-            const newNote = noteMap[originalNote];
-            if (newNote) {
-                const octaveMatch = newNote.match(/\d+$/);
-                const octave = octaveMatch ? parseInt(octaveMatch[0], 10) : 0;
-                const note = newNote.substring(0, newNote.length - (octaveMatch ? octaveMatch[0].length : 0));
-                newKeyInfo.green = { note, octave };
-            }
-        }
-
-        // Handle the blue layout
-        if (template.blue) {
-            const isBlackKey = template.blue.note.includes('b') || template.blue.note.includes('#');
-            const targetKey = isBlackKey ? keyRemap[key] : key;
-
-            if (targetKey) {
-                 const originalNote = `${template.blue.note}${template.blue.octave}`;
-                 const newNote = noteMap[originalNote];
-                 if (newNote) {
-                    const octaveMatch = newNote.match(/\d+$/);
-                    const octave = octaveMatch ? parseInt(octaveMatch[0], 10) : 0;
-                    const note = newNote.substring(0, newNote.length - (octaveMatch ? octaveMatch[0].length : 0));
-                    
-                    // This ensures we are writing to the correct key in the newKeyData map.
-                    if (!newKeyData[targetKey]) {
-                        // If the target key doesn't exist yet, create it.
-                        // This happens if a key like 'a' (which has blue:null in template) becomes a black key.
-                        newKeyData[targetKey] = { green: null, blue: null };
-                    }
-                    newKeyData[targetKey].blue = { note, octave };
-                 }
-            }
-        }
-        
-        // Assign the newly constructed info to the original key,
-        // unless it's a black key that got remapped.
-        if (!newKeyData[key]) {
-            newKeyData[key] = newKeyInfo;
-        } else {
-            // If the key already exists (from a black key remap), just copy green info.
-            newKeyData[key].green = newKeyInfo.green;
-        }
-    }
-    return newKeyData;
-}
+populateDynamicBindings();
 
 function formatBinding(bindingString) {
     const chars = bindingString.split('');
@@ -484,69 +392,6 @@ function formatBinding(bindingString) {
         return `${chars[0]} ${chars[1]}`;
     }
     return bindingString;
-}
-
-const noteNumToName = (num) => {
-  const octave = Math.floor(num / 12);
-  const noteIndex = num % 12;
-  // Use flat names for consistency with the rest of the app's display logic
-  const noteName = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'][noteIndex];
-  return `${noteName}${octave}`;
-};
-
-const noteNameToNum = (name) => {
-    const octave = parseInt(name.at(-1), 10);
-    const pc = name.slice(0, -1);
-    const idx = pitchIndex[pc];
-    if (idx === undefined) {
-        console.error(`Invalid note name for noteNameToNum: ${name}`);
-        return null;
-    };
-    return octave * 12 + idx;
-};
-
-function generateNoteSequence(basePitch, numOctaves) {
-  const startOctave = 3;
-  const numWhiteKeys = 7 * numOctaves + 3;
-
-  const modalSteps = {
-    'C': [2, 2, 1, 2, 2, 2, 1], // Ionian
-    'D': [2, 1, 2, 2, 2, 1, 2], // Dorian
-    'E': [1, 2, 2, 2, 1, 2, 2], // Phrygian
-    'F': [2, 2, 2, 1, 2, 2, 1], // Lydian
-    'G': [2, 2, 1, 2, 2, 1, 2], // Mixolydian
-    'A': [2, 1, 2, 2, 1, 2, 2], // Aeolian
-    'B': [1, 2, 2, 1, 2, 2, 2]  // Locrian
-  };
-
-  const whiteKeys = [];
-  const whiteNoteNums = new Set();
-  const steps = modalSteps[basePitch];
-  
-  let currentNoteNum = startOctave * 12 + pitchIndex[basePitch];
-
-  for (let i = 0; i < numWhiteKeys; i++) {
-    whiteKeys.push(noteNumToName(currentNoteNum));
-    whiteNoteNums.add(currentNoteNum);
-    const step = steps[i % 7];
-    currentNoteNum += step;
-  }
-
-  const blackKeys = [];
-  const minNote = noteNameToNum(whiteKeys[0]);
-  const maxNote = noteNameToNum(whiteKeys[whiteKeys.length - 1]);
-
-  if (minNote === null || maxNote === null) {
-      return { whites: [], blacks: [] };
-  }
-
-  for (let i = minNote; i <= maxNote; i++) {
-    if (!whiteNoteNums.has(i)) {
-      blackKeys.push(noteNumToName(i));
-    }
-  }
-
-  return { whites: whiteKeys, blacks: blackKeys };
 }
 
 function drawKeyboard(numOctaves = 1) {
@@ -560,9 +405,27 @@ function drawKeyboard(numOctaves = 1) {
   const bindingsMode = toggleStates.bindings[currentToggleStates.bindings];
   const layoutMode = toggleStates.layout[currentToggleStates.layout];
 
-  const { whites, blacks } = generateNoteSequence(currentBasePitch, numOctaves);
-  whiteKeysPhysical = whites;
-  blackKeysPhysical = blacks;
+  const startOctave = 3;
+    const noteOrder = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+    const fullKeyboard = [];
+
+    for (let o = 0; o < numOctaves + 1; o++) {
+        for(const noteName of noteOrder) {
+            fullKeyboard.push(noteName + (startOctave + o));
+        }
+    }
+
+    const endNote = 'E' + (startOctave + numOctaves);
+    const endIndex = fullKeyboard.indexOf(endNote);
+    const finalKeyboard = fullKeyboard.slice(0, endIndex + 1);
+    
+    finalKeyboard.forEach(note => {
+        if (note.includes('#') || note.includes('b')) {
+            blackKeysPhysical.push(note);
+        } else {
+            whiteKeysPhysical.push(note);
+        }
+    });
   
   const blackBetweenIndex = {};
   blackKeysPhysical.forEach(note => {
@@ -598,12 +461,9 @@ function drawKeyboard(numOctaves = 1) {
 
       // Apply color based on mode
       if (colorMode === 't-green') {
-        const topColor = noteColors[noteName] || '#fff'; // Use the brighter color
-        div.style.background = `linear-gradient(to bottom, ${topColor} 50%, #fff 50%)`;
+        div.style.backgroundColor = noteLightColors[noteName] || '#fff';
       } else {
-        // For all other modes, explicitly set background to white.
-        // This fixes the bug where keys would turn black.
-        div.style.background = '#fff';
+        div.style.backgroundColor = '#fff';
       }
       
       if (namesMode === 't-yellow' || namesMode === 't-green') {
@@ -614,10 +474,8 @@ function drawKeyboard(numOctaves = 1) {
         // Set text color based on the Color toggle state
         if (colorMode === 't-green') {
           label.style.color = 'white';
-          label.style.textShadow = ''; // Reset to default stylesheet shadow
         } else { // 'deactivated' or 't-blue'
           label.style.color = 'black';
-          label.style.textShadow = 'none'; // Remove shadow for black text
         }
 
         div.appendChild(label);
@@ -693,31 +551,23 @@ function pressVisual(finalNote, pressed) {
   const isWhiteKey = el.classList.contains('white-key');
 
   if (isWhiteKey) {
-    // === WHITE KEY LOGIC (REFACTORED) ===
-    // This logic now exclusively uses the `background` property to prevent CSS conflicts.
+    // === WHITE KEY LOGIC ===
     if (pressed) {
-        switch (colorMode) {
-            case 't-green':
-            case 't-blue':
-                el.style.background = noteColors[noteName] || '#fff'; // Bright/active color
-                break;
-            case 'deactivated':
-            default:
-                el.style.background = '#d3d3d3'; // Grey when played
-                break;
-        }
+      if (colorMode === 'deactivated') {
+        el.style.backgroundColor = '#d3d3d3'; // Turn grey when played
+      } else if (colorMode === 't-green') {
+        el.style.backgroundColor = noteColors[noteName] || '#fff'; // Brighter version
+      } else if (colorMode === 't-blue') {
+        el.style.backgroundColor = noteColors[noteName] || '#fff'; // Assigned color
+      }
     } else { // Released
-        switch (colorMode) {
-            case 't-green':
-                const topColor = noteColors[noteName] || '#fff'; // Use the brighter color
-                el.style.background = `linear-gradient(to bottom, ${topColor} 50%, #fff 50%)`;
-                break;
-            case 't-blue':
-            case 'deactivated':
-            default:
-                el.style.background = '#fff'; // Back to white
-                break;
-        }
+      if (colorMode === 'deactivated') {
+        el.style.backgroundColor = '#fff'; // Back to white
+      } else if (colorMode === 't-green') {
+        el.style.backgroundColor = noteLightColors[noteName] || '#fff'; // Back to light color
+      } else if (colorMode === 't-blue') {
+        el.style.backgroundColor = '#fff'; // Back to white
+      }
     }
   } else {
     // === BLACK KEY LOGIC ===
@@ -922,9 +772,7 @@ const octaveToggleOptions = document.querySelectorAll('.toggle-option');
 const soundDisplay = document.getElementById('sound-name-display');
 const prevSoundBtn = document.getElementById('prev-sound');
 const nextSoundBtn = document.getElementById('next-sound');
-const basePitchSelect = document.getElementById('base-pitch-select');
 
-let currentBasePitch = 'C';
 const sounds = ['sine', 'triangle', 'square', 'sawtooth', 'organ'];
 let currentSoundIndex = 1; // Default to triangle
 
@@ -954,7 +802,8 @@ octaveToggleOptions.forEach(option => {
     option.addEventListener('click', () => {
         octaveToggleOptions.forEach(opt => opt.classList.remove('active'));
         option.classList.add('active');
-        updateForPitchChange(); // This will regenerate everything based on the new octave count
+        const numOctaves = parseInt(option.dataset.octaves, 10);
+        drawKeyboard(numOctaves);
     });
 });
 
@@ -1011,23 +860,7 @@ function setupToggles() {
 }
 
 
-function updateForPitchChange() {
-  const numOctaves = getActiveOctaveCount();
-  const noteSequence = generateNoteSequence(currentBasePitch, numOctaves);
-  
-  keyData = regenerateKeyData(currentBasePitch, noteSequence);
-  keyBindings = JSON.parse(JSON.stringify(keyBindingsTemplate)); // Reset bindings
-  populateDynamicBindings();
-  
-  drawKeyboard(numOctaves);
-}
-
-basePitchSelect.addEventListener('change', (e) => {
-  currentBasePitch = e.target.value;
-  updateForPitchChange();
-});
-
 // Initial draw
 setupToggles();
-updateForPitchChange(); // Initial setup for C
+drawKeyboard(1);
 updateSoundByIndex(currentSoundIndex);
