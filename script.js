@@ -567,7 +567,7 @@ function drawKeyboard(numOctaves = 1) {
       const noteName = note.slice(0, -1);
 
       let isNoteInScale = notesInCurrentScale.has(noteName);
-      let isDisabled = focusMode === 't-purple' && layoutMode === 't-green' && !isNoteInScale;
+      let isDisabled = focusMode === 't-purple' && !isNoteInScale;
 
       if (isDisabled) {
         div.classList.add('key-disabled');
@@ -631,7 +631,7 @@ function drawKeyboard(numOctaves = 1) {
 
       const sharpEquivalent = flatToSharpMap[pc];
       const isNoteInScale = notesInCurrentScale.has(pc) || (sharpEquivalent && notesInCurrentScale.has(sharpEquivalent));
-      let isDisabled = focusMode === 't-purple' && layoutMode === 't-green' && !isNoteInScale;
+      let isDisabled = focusMode === 't-purple' && !isNoteInScale;
 
       if (isDisabled) {
         div.classList.add('key-disabled');
@@ -741,7 +741,7 @@ function getNoteMapping(key, layout, octaves, isShifted) {
 
   // Check for Focus mode
   const focusMode = toggleStates.focus[currentToggleStates.focus];
-  if (focusMode === 't-purple' && layout === 't-green') {
+  if (focusMode === 't-purple') {
     const currentScaleName = document.querySelector('.scale-selector').value;
     const notesInCurrentScale = getNotesForScale(currentScaleName);
     if (!notesInCurrentScale.has(note)) {
@@ -1028,7 +1028,7 @@ function setupToggles() {
         }
 
         // If the color, names, layout, or bindings toggle was changed, redraw the keyboard
-        if (toggleName === 'color' || toggleName === 'names' || toggleName === 'layout' || toggleName === 'bindings') {
+        if (toggleName === 'color' || toggleName === 'names' || toggleName === 'layout' || toggleName === 'bindings' || toggleName === 'focus') {
           const activeOctaveEl = document.querySelector('.toggle-option.active');
           const numOctaves = activeOctaveEl ? parseInt(activeOctaveEl.dataset.octaves, 10) : 1;
           drawKeyboard(numOctaves);
