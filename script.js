@@ -846,7 +846,6 @@ function drawKeyboard(numOctaves = 1) {
   
   const startNote = range.startNote;
   const startOctave = parseInt(startNote.slice(-1));
-  const startNoteName = startNote.slice(0, -1);
   
   const noteOrder = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
   const fullKeyboard = [];
@@ -858,6 +857,7 @@ function drawKeyboard(numOctaves = 1) {
       }
   }
 
+    const startNoteName = startNote.slice(0, -1);
     let endOctave = startOctave + numOctaves;
     if (pitchIndex[range.endNoteBase] < pitchIndex[startNoteName]) {
         endOctave++;
@@ -870,7 +870,6 @@ function drawKeyboard(numOctaves = 1) {
     }
 
     let startNoteForSearch = startNote;
-    const startNoteName = startNoteForSearch.slice(0, -1);
     const startNoteOctave = startNoteForSearch.slice(-1);
     if (sharpToFlatMap[startNoteName]) {
         startNoteForSearch = sharpToFlatMap[startNoteName] + startNoteOctave;
