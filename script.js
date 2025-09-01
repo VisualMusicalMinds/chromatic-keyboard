@@ -1316,6 +1316,7 @@ keySelector.addEventListener('change', (e) => {
   const activeOctaveEl = document.querySelector('.toggle-option.active');
   const numOctaves = activeOctaveEl ? parseInt(activeOctaveEl.dataset.octaves, 10) : 1;
   drawKeyboard(numOctaves);
+  e.target.blur();
 });
 
 scaleSelector.addEventListener('change', (e) => {
@@ -1326,6 +1327,7 @@ scaleSelector.addEventListener('change', (e) => {
   const activeOctaveEl = document.querySelector('.toggle-option.active');
   const numOctaves = activeOctaveEl ? parseInt(activeOctaveEl.dataset.octaves, 10) : 1;
   drawKeyboard(numOctaves);
+  e.target.blur();
 });
 
 flexBtn.addEventListener('click', () => {
