@@ -1392,3 +1392,15 @@ function setupToggles() {
 setupToggles();
 drawKeyboard(1);
 updateSoundByIndex(currentSoundIndex);
+
+const collapseBtn = document.getElementById('collapse-btn');
+const controlsContainer = document.querySelector('.controls-container');
+
+collapseBtn.addEventListener('click', () => {
+  controlsContainer.classList.toggle('hidden');
+  if (controlsContainer.classList.contains('hidden')) {
+    collapseBtn.textContent = '▲';
+  } else {
+    collapseBtn.textContent = '▼';
+  }
+});
