@@ -8,67 +8,71 @@
 </head>
 <body>
 
-<div class="controls-container">
-  <div class="layout-controls">
-    <div class="layout-selectors">
-      <button class="layout-btn flex-btn active">Flex</button>
-      <button class="layout-btn chromatic-btn">Chromatic</button>
-    </div>
-    <div class="key-scale-selectors">
-      <span>Key:</span>
-      <select class="key-selector">
-        <option>C</option>
-        <option>C#/Db</option>
-        <option>D</option>
-        <option>D#/Eb</option>
-        <option>E</option>
-        <option>F</option>
-        <option>F#/Gb</option>
-        <option>G</option>
-        <option>G#/Ab</option>
-        <option>A</option>
-        <option>A#/Bb</option>
-        <option>B</option>
-      </select>
-      <select class="scale-selector">
-        <option>Major</option>
-        <option>Natural Minor</option>
-        <option>Harmonic Minor</option>
-        <option>Melodic Minor</option>
-        <option>Dorian</option>
-        <option>Phrygian</option>
-        <option>Lydian</option>
-        <option>Mixolydian</option>
-        <option>Locrian</option>
-      </select>
-    </div>
-  </div>
-  <div class="toggle-grid-control">
-    <button class="toggle-btn" id="toggle-color">Color</button>
-    <button class="toggle-btn" id="toggle-names">Names</button>
-    <button class="toggle-btn" id="toggle-bindings">Bindings</button>
-    <button class="toggle-btn" id="toggle-focus">Focus</button>
-  </div>
-  <div class="instrument-controls">
-    <div class="octave-control">
-      <div class="toggle-switch">
-        <div class="toggle-option active" data-octaves="1">1</div>
-        <div class="toggle-option" data-octaves="2">2</div>
-        <div class="toggle-option" data-octaves="3">3</div>
-        <div class="toggle-option" data-octaves="4">4</div>
+<div class="piano-container">
+  <div class="controls-container">
+    <div class="layout-controls">
+      <div class="layout-selectors">
+        <button class="layout-btn flex-btn active">Flex</button>
+        <button class="layout-btn chromatic-btn">Chromatic</button>
+      </div>
+      <div class="key-scale-selectors">
+        <span>Key:</span>
+        <select class="key-selector">
+          <option>C</option>
+          <option>C#/Db</option>
+          <option>D</option>
+          <option>D#/Eb</option>
+          <option>E</option>
+          <option>F</option>
+          <option>F#/Gb</option>
+          <option>G</option>
+          <option>G#/Ab</option>
+          <option>A</option>
+          <option>A#/Bb</option>
+          <option>B</option>
+        </select>
+        <select class="scale-selector">
+          <option>Major</option>
+          <option>Natural Minor</option>
+          <option>Harmonic Minor</option>
+          <option>Melodic Minor</option>
+          <option>Dorian</option>
+          <option>Phrygian</option>
+          <option>Lydian</option>
+          <option>Mixolydian</option>
+          <option>Locrian</option>
+        </select>
       </div>
     </div>
-    <div class="sound-dial-control">
-      <button class="dial-btn" id="prev-sound">◀</button>
-      <span id="sound-name-display">Triangle</span>
-      <button class="dial-btn" id="next-sound">▶</button>
+    <div class="toggle-grid-control">
+      <button class="toggle-btn" id="toggle-color">Color</button>
+      <button class="toggle-btn" id="toggle-names">Names</button>
+      <button class="toggle-btn" id="toggle-bindings">Bindings</button>
+      <button class="toggle-btn" id="toggle-focus">Focus</button>
+    </div>
+    <div class="instrument-controls">
+      <div class="octave-control">
+        <div class="toggle-switch">
+          <div class="toggle-option active" data-octaves="1">1</div>
+          <div class="toggle-option" data-octaves="2">2</div>
+          <div class="toggle-option" data-octaves="3">3</div>
+          <div class="toggle-option" data-octaves="4">4</div>
+        </div>
+      </div>
+      <div class="sound-dial-control">
+        <button class="dial-btn" id="prev-sound">◀</button>
+        <span id="sound-name-display">Triangle</span>
+        <button class="dial-btn" id="next-sound">▶</button>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="keyboard" id="kb">
-  <div class="whites" id="whites"></div>
-  <div class="blacks" id="blacks"></div>
+  <button id="collapse-btn">▼</button>
+
+  <div class="keyboard" id="kb">
+    <div class="whites" id="whites"></div>
+    <div class="blacks" id="blacks"></div>
+  </div>
 </div>
 
 <script src="script.js"></script>
