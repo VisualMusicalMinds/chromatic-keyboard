@@ -262,7 +262,7 @@ const keyDisplayRanges = {
   'E': { startNote: 'E3', endNoteBase: 'G#' },
   'F': { startNote: 'F3', endNoteBase: 'A' },
   'G': { startNote: 'G2', endNoteBase: 'B' },
-  'A': { startNote: 'A2', endNoteBase: 'C4' },
+  'A': { startNote: 'A2', endNoteBase: 'C' },
 }
 
 const flexKeymaps = {
