@@ -1167,6 +1167,12 @@ function getNoteMapping(key, layout, octaves, isShifted) {
     noteToLightUp = noteToPlay;
   }
   
+  if (octaves === 1) {
+    const noteName = noteToLightUp.slice(0, -1);
+    const oct = parseInt(noteToLightUp.slice(-1), 10);
+    noteToLightUp = `${noteName}${oct + 1}`;
+  }
+  
   return { noteToPlay, noteToLightUp: normalizeNoteForDisplay(noteToLightUp) };
 }
 
