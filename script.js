@@ -844,7 +844,12 @@ function drawKeyboard(numOctaves = 1) {
   const keyName = document.querySelector('.key-selector').value;
   const range = keyDisplayRanges[keyName] || keyDisplayRanges['C']; // Default to C
   
-  const startNote = range.startNote;
+  let startNote = range.startNote;
+  if (numOctaves === 1) {
+    const noteName = startNote.slice(0, -1);
+    const octave = parseInt(startNote.slice(-1), 10);
+    startNote = `${noteName}${octave + 1}`;
+  }
   const startOctave = parseInt(startNote.slice(-1));
   
   const noteOrder = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
