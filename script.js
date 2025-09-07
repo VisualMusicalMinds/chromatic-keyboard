@@ -1610,7 +1610,7 @@ octaveToggleOptions.forEach(option => {
 // -------- TOGGLE GRID LOGIC --------
 const toggleStates = {
   color: ['deactivated', 't-green', 't-blue'],
-  names: ['deactivated', 't-yellow', 't-green', 't-blue', 't-orange'],
+  names: ['deactivated', 't-orange', 't-yellow', 't-green', 't-blue'],
   bindings: ['deactivated', 't-blue'],
   focus: ['deactivated', 't-purple'],
 };
