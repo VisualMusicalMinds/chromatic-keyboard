@@ -258,7 +258,7 @@ const flatToSharpMap = {
 
 const keyDisplayRanges = {
   'C': { startNote: 'C3', endNoteBase: 'E' },
-  'Db': { startNote: 'C2', endNoteBase: 'F' },
+  'Db': { startNote: 'C3', endNoteBase: 'F' },
   'D': { startNote: 'D3', endNoteBase: 'F#' },
   'E': { startNote: 'E3', endNoteBase: 'G#' },
   'F': { startNote: 'F3', endNoteBase: 'A' },
@@ -867,8 +867,8 @@ function populateDynamicBindings() {
   }
 }
 
-updateFlexLayout('Db', 'Major');
-updateBaseNoteOctaves('Db', 'Major');
+updateFlexLayout('C', 'Major');
+updateBaseNoteOctaves('C', 'Major');
 populateDynamicBindings();
 
 function formatBinding(bindingString) {
