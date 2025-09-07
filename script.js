@@ -1287,7 +1287,7 @@ function drawKeyboard(numOctaves = 1) {
       if (!isDisabled) {
         div.addEventListener('mousedown', () => onPointerDown(note));
         div.addEventListener('mouseup', () => onPointerUp(note));
-        div.addEventListener('mouseleave', () => onPointerUp(note));
+        // mouseleave listener removed to allow for dragging
         div.addEventListener('touchstart', (ev) => { ev.preventDefault(); onPointerDown(note); }, {passive:false});
         div.addEventListener('touchend', () => onPointerUp(note));
       }
@@ -1340,7 +1340,7 @@ function drawKeyboard(numOctaves = 1) {
       if (!isDisabled) {
         div.addEventListener('mousedown', () => onPointerDown(note));
         div.addEventListener('mouseup', () => onPointerUp(note));
-        div.addEventListener('mouseleave', () => onPointerUp(note));
+        // mouseleave listener removed to allow for dragging
         div.addEventListener('touchstart', (ev) => { ev.preventDefault(); onPointerDown(note); }, {passive:false});
         div.addEventListener('touchend', () => onPointerUp(note));
       }
@@ -1348,6 +1348,9 @@ function drawKeyboard(numOctaves = 1) {
 }
 
 // -------- INTERACTION --------
+let isDragging = false;
+let lastDraggedNote = null;
+
 function pressVisual(finalNote, pressed) {
   const el = document.querySelector(`[data-note="${finalNote}"]`);
   if (!el) return;
@@ -1556,15 +1559,78 @@ window.addEventListener('keydown', e => { if (e.key === 'CapsLock') capsLock = !
 
 function onPointerDown(note) {
   if (ctx.state !== 'running') ctx.resume();
-  // Per user instruction, mouse clicks ignore modifiers and play the note as-is.
   pressVisual(note, true);
   startNote(note, 0.2);
+  isDragging = true;
+  lastDraggedNote = note;
 }
+
 function onPointerUp(note) {
-  // Per user instruction, mouse clicks ignore modifiers.
   pressVisual(note, false);
   stopNote(note);
 }
+
+document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+
+    const elem = document.elementFromPoint(e.clientX, e.clientY);
+    if (!elem) return;
+    
+    const isKey = elem.classList.contains('white-key') || elem.classList.contains('black-key');
+    if (!isKey) return;
+
+    const note = elem.dataset.note;
+    if (note && note !== lastDraggedNote) {
+        if (lastDraggedNote) {
+            stopNote(lastDraggedNote);
+            pressVisual(lastDraggedNote, false);
+        }
+        onPointerDown(note);
+    }
+});
+
+document.addEventListener('mouseup', () => {
+    if (isDragging) {
+        if (lastDraggedNote) {
+            stopNote(lastDraggedNote);
+            pressVisual(lastDraggedNote, false);
+            lastDraggedNote = null;
+        }
+        isDragging = false;
+    }
+});
+
+document.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    try { e.preventDefault(); } catch (e) {}
+
+    const touch = e.touches[0];
+    const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (!elem) return;
+    
+    const isKey = elem.classList.contains('white-key') || elem.classList.contains('black-key');
+    if (!isKey) return;
+
+    const note = elem.dataset.note;
+    if (note && note !== lastDraggedNote) {
+        if (lastDraggedNote) {
+            stopNote(lastDraggedNote);
+            pressVisual(lastDraggedNote, false);
+        }
+        onPointerDown(note);
+    }
+}, { passive: false });
+
+document.addEventListener('touchend', () => {
+    if (isDragging) {
+        if (lastDraggedNote) {
+            stopNote(lastDraggedNote);
+            pressVisual(lastDraggedNote, false);
+            lastDraggedNote = null;
+        }
+        isDragging = false;
+    }
+});
 
 // -------- NEW CONTROLS --------
 const octaveToggleOptions = document.querySelectorAll('.toggle-option');
