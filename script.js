@@ -1480,14 +1480,12 @@ function getNoteMapping(key, layout, octaves, isShifted) {
     }
   } else {
     // --- Chromatic Mode Note Lighting Logic ---
-    if (octaves < 3 && isShifted) {
+    if (isShifted) {
         noteToPlay = `${note}${octave + 2}`;
     }
     noteToLightUp = noteToPlay;
 
     if (octaves === 1) {
-      // Pre-compensate for the final `oct + 1` shift.
-      // To light up C4, we need to set the note to C3 here.
       if (key === 'z' || key === 'q') {
         noteToLightUp = 'C3';
       } else {
@@ -1495,9 +1493,11 @@ function getNoteMapping(key, layout, octaves, isShifted) {
         noteToLightUp = `${noteName}3`;
       }
     } else if (octaves === 2) {
-      if (key === 'z') { // Catches 'z' and 'Z'
+      if (key === 'z') {
+        noteToPlay = 'C3';
         noteToLightUp = 'C3';
-      } else if (key === 'q') { // Catches 'q' and 'Q'
+      } else if (key === 'q') {
+        noteToPlay = 'C4';
         noteToLightUp = 'C4';
       }
     }
