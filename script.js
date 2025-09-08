@@ -1484,6 +1484,23 @@ function getNoteMapping(key, layout, octaves, isShifted) {
         noteToPlay = `${note}${octave + 2}`;
     }
     noteToLightUp = noteToPlay;
+
+    if (octaves === 1) {
+      // Pre-compensate for the final `oct + 1` shift.
+      // To light up C4, we need to set the note to C3 here.
+      if (key === 'z' || key === 'q') {
+        noteToLightUp = 'C3';
+      } else {
+        const noteName = noteToPlay.slice(0, -1);
+        noteToLightUp = `${noteName}3`;
+      }
+    } else if (octaves === 2) {
+      if (key === 'z') { // Catches 'z' and 'Z'
+        noteToLightUp = 'C3';
+      } else if (key === 'q') { // Catches 'q' and 'Q'
+        noteToLightUp = 'C4';
+      }
+    }
   }
   
   if (octaves === 1) {
