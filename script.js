@@ -1492,10 +1492,10 @@ function getNoteMapping(key, layout, octaves, isShifted) {
 
     if (octaves === 1) {
       const noteName = noteToPlay.slice(0, -1);
-      // Default to the left-side CDE block (octave 4)
+      // Default to the left-side block (octave 4)
       noteToLightUp = `${noteName}4`;
-      // Override for keys that should light up the right-side CDE block (octave 5)
-      if (',./<>?;:lkjpoiuy67890)'.includes(key)) {
+      // Override for right-side keys that are C, D, or E
+      if (',./?;:iop90)'.includes(key) && ['C', 'D', 'E', 'Db', 'Eb'].includes(noteName)) {
         noteToLightUp = `${noteName}5`;
       }
     } else if (octaves === 2) {
