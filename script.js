@@ -1152,7 +1152,13 @@ function drawKeyboard(numOctaves = 1) {
   const notesInCurrentScale = getNotesForScale(currentKeyName, currentScaleName);
 
   const keyName = document.querySelector('.key-selector').value;
-  const range = keyDisplayRanges[keyName] || keyDisplayRanges['C']; // Default to C
+  let range;
+
+  if (layoutMode === 't-blue') { // Chromatic mode
+    range = { startNote: 'C3', endNoteBase: 'E' };
+  } else { // Flex mode
+    range = keyDisplayRanges[keyName] || keyDisplayRanges['C'];
+  }
   
   let startNote = range.startNote;
   if (numOctaves === 1) {
