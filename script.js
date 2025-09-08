@@ -1478,38 +1478,32 @@ function getNoteMapping(key, layout, octaves, isShifted) {
         noteToLightUp = `${note}${lightUpOctave}`;
       }
     }
+     if (octaves === 1) {
+        const noteName = noteToLightUp.slice(0, -1);
+        const oct = parseInt(noteToLightUp.slice(-1), 10);
+        noteToLightUp = `${noteName}${oct + 1}`;
+    }
   } else {
     // --- Chromatic Mode Note Logic ---
-    // General rule: Shift raises the played note by 2 octaves.
     if (isShifted) {
       noteToPlay = `${note}${octave + 2}`;
     }
 
-    if (octaves === 2) {
-      // General rule for setting 2 lighting: shifted keys light up the unshifted key.
-      noteToLightUp = `${note}${octave}`;
-      
-      // Special overrides for lighting in setting 2
+    if (octaves === 1) {
+      const noteName = noteToPlay.slice(0, -1);
+      noteToLightUp = `${noteName}4`; // Default to the C4 octave
+      if (key === 'z' || key === 'q') noteToLightUp = 'C4';
+      if (key === 'x' || key === 'w') noteToLightUp = 'D4';
+      if (key === '/' || key === 'p') noteToLightUp = 'E5';
+    } else if (octaves === 2) {
+      noteToLightUp = `${note}${octave}`; // Default: light up the unshifted key
+      // Special overrides for lighting:
       if (key === 'z') noteToLightUp = 'C3';
       if (key === 'x') noteToLightUp = 'D3';
-      if (key === 'q') noteToLightUp = 'C4';
-      if (key === ',') noteToLightUp = 'C4';
+      if (key === 'q' || key === ',') noteToLightUp = 'C4';
       if (key === 'i') noteToLightUp = 'C5';
-
-    } else {
+    } else { // Settings 3 & 4
       noteToLightUp = noteToPlay;
-    }
-  }
-
-  // Final global adjustment for 1-octave display mode
-  if (octaves === 1) {
-    const noteName = noteToLightUp.slice(0, -1);
-    const oct = parseInt(noteToLightUp.slice(-1), 10);
-    noteToLightUp = `${noteName}${oct + 1}`;
-
-    // Special override for setting 1 lighting
-    if (layout === 't-blue' && (key === 'z' || key === 'q')) {
-      noteToLightUp = 'C4';
     }
   }
   
