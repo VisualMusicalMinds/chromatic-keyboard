@@ -1478,7 +1478,8 @@ function getNoteMapping(key, layout, octaves, isShifted) {
         noteToLightUp = `${note}${lightUpOctave}`;
       }
     }
-     if (octaves === 1) {
+    // Final shift for flex mode setting 1
+    if (octaves === 1) {
         const noteName = noteToLightUp.slice(0, -1);
         const oct = parseInt(noteToLightUp.slice(-1), 10);
         noteToLightUp = `${noteName}${oct + 1}`;
@@ -1491,10 +1492,12 @@ function getNoteMapping(key, layout, octaves, isShifted) {
 
     if (octaves === 1) {
       const noteName = noteToPlay.slice(0, -1);
-      noteToLightUp = `${noteName}4`; // Default to the C4 octave
-      if (key === 'z' || key === 'q') noteToLightUp = 'C4';
-      if (key === 'x' || key === 'w') noteToLightUp = 'D4';
-      if (key === '/' || key === 'p') noteToLightUp = 'E5';
+      // Default to the left-side CDE block (octave 4)
+      noteToLightUp = `${noteName}4`;
+      // Override for keys that should light up the right-side CDE block (octave 5)
+      if (',./<>?;:lkjpoiuy67890)'.includes(key)) {
+        noteToLightUp = `${noteName}5`;
+      }
     } else if (octaves === 2) {
       noteToLightUp = `${note}${octave}`; // Default: light up the unshifted key
       // Special overrides for lighting:
