@@ -112,12 +112,13 @@ body {
 .keyboard {
   position: relative;
   display: block;
-  width: calc(var(--white-w) * 11);
   height: var(--white-h);
   box-shadow: 0 10px 30px rgba(0,0,0,.4);
   background: #111;
   border-radius: 8px;
   padding: 8px;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .whites, .blacks { position: absolute; inset: 8px; }
@@ -279,6 +280,13 @@ body {
   }
   .sound-dial-control {
     width: 140px;
+  }
+}
+
+@media (max-width: 600px) {
+  .controls-container {
+    flex-direction: column;
+    align-items: center;
   }
 }
 
