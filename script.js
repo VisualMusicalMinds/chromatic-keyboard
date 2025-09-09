@@ -1230,14 +1230,24 @@ function drawKeyboard(numOctaves = 1) {
       if (idx !== -1) blackBetweenIndex[note] = idx;
   });
 
+  const pianoContainer = document.querySelector('.piano-container');
   const totalWhiteKeys = whiteKeysPhysical.length;
-  const maxKeyboardWidth = window.innerWidth * 0.95;
-  let whiteKeyWidth = Math.min(60, maxKeyboardWidth / totalWhiteKeys);
+  const containerWidth = pianoContainer.clientWidth;
+
+  // Set the ideal key and keyboard width
+  const idealKeyWidth = 60;
+  const idealKeyboardWidth = totalWhiteKeys * idealKeyWidth;
+
+  // The final keyboard width is the smaller of the ideal width and the container width
+  const finalKeyboardWidth = Math.min(idealKeyboardWidth, containerWidth);
+  
+  // The final key width is derived from the final keyboard width
+  const whiteKeyWidth = finalKeyboardWidth / totalWhiteKeys;
   let blackKeyWidth = whiteKeyWidth * 0.6;
 
   document.documentElement.style.setProperty('--white-w', `${whiteKeyWidth}px`);
   document.documentElement.style.setProperty('--black-w', `${blackKeyWidth}px`);
-  document.getElementById('kb').style.width = `${totalWhiteKeys * whiteKeyWidth}px`;
+  document.getElementById('kb').style.width = `${finalKeyboardWidth}px`;
 
   whiteKeysPhysical.forEach((note, i) => {
       const div = document.createElement('div');
