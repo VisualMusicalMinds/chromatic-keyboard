@@ -1706,6 +1706,24 @@ octaveToggleOptions.forEach(option => {
     });
 });
 
+// Volume Control Logic
+const volumeBtn = document.getElementById('toggle-volume');
+const volumeDisplay = document.getElementById('volume-display');
+const volumeLevels = [
+    { gain: 0.9, text: '100%' },
+    { gain: 0.675, text: '75%' },
+    { gain: 0.45, text: '50%' },
+    { gain: 0.225, text: '25%' },
+];
+let currentVolumeIndex = 0;
+
+volumeBtn.addEventListener('click', () => {
+    currentVolumeIndex = (currentVolumeIndex + 1) % volumeLevels.length;
+    const newVolume = volumeLevels[currentVolumeIndex];
+    masterGain.gain.value = newVolume.gain;
+    volumeDisplay.textContent = newVolume.text;
+});
+
 
 // -------- TOGGLE GRID LOGIC --------
 const toggleStates = {
