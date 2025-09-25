@@ -250,6 +250,17 @@ body {
   text-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
 
+#toggle-volume {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+#toggle-volume span:first-child {
+  font-size: 1.2em;
+}
+
 #collapse-btn {
   background-color: #333;
   color: #fff;
