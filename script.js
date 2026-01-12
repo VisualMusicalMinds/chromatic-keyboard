@@ -1377,18 +1377,28 @@ function pressVisual(finalNote, pressed) {
   el.classList.toggle('pressed', pressed);
 
   // === MASTER TOGGLE LOGIC (OVERRIDE) ===
+  const noteName = finalNote.slice(0, -1);
+  const colorMode = toggleStates.color[currentToggleStates.color];
+
   if (pressed) {
+    let overrideColor = null;
     if (masterColorState === 'red') {
-      el.style.background = '#FF3B30'; // iOS Red
-      return;
+      overrideColor = '#FF3B30'; // iOS Red
     } else if (masterColorState === 'blue') {
-      el.style.background = '#007AFF'; // iOS Blue
+      overrideColor = '#007AFF'; // iOS Blue
+    }
+
+    if (overrideColor) {
+      // If Color toggle is 't-green' (gradient mode) and it's a white key, preserve top color
+      if (colorMode === 't-green' && noteColors[noteName] && el.classList.contains('white-key')) {
+        const topColor = noteColors[noteName];
+        el.style.background = `linear-gradient(to bottom, ${topColor} 50%, ${overrideColor} 50%)`;
+      } else {
+        el.style.background = overrideColor;
+      }
       return;
     }
   }
-
-  const noteName = finalNote.slice(0, -1);
-  const colorMode = toggleStates.color[currentToggleStates.color];
   const isWhiteKey = el.classList.contains('white-key');
 
   if (isWhiteKey) {
