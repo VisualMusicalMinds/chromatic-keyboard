@@ -1367,11 +1367,25 @@ function drawKeyboard(numOctaves = 1) {
 let isDragging = false;
 let lastDraggedNote = null;
 
+// 'off' (default), 'red', 'blue'
+let masterColorState = 'off';
+
 function pressVisual(finalNote, pressed) {
   const el = document.querySelector(`[data-note="${finalNote}"]`);
   if (!el) return;
 
   el.classList.toggle('pressed', pressed);
+
+  // === MASTER TOGGLE LOGIC (OVERRIDE) ===
+  if (pressed) {
+    if (masterColorState === 'red') {
+      el.style.background = '#FF3B30'; // iOS Red
+      return;
+    } else if (masterColorState === 'blue') {
+      el.style.background = '#007AFF'; // iOS Blue
+      return;
+    }
+  }
 
   const noteName = finalNote.slice(0, -1);
   const colorMode = toggleStates.color[currentToggleStates.color];
@@ -1843,3 +1857,26 @@ collapseBtn.addEventListener('click', () => {
     collapseBtn.textContent = '▼';
   }
 });
+
+// -------- MASTER COLOR TOGGLE LOGIC --------
+const masterRed = document.getElementById('master-red');
+const masterOff = document.getElementById('master-off');
+const masterBlue = document.getElementById('master-blue');
+
+function updateMasterToggle(newState) {
+  masterColorState = newState;
+
+  // Reset visual active states
+  masterRed.classList.remove('active');
+  masterOff.classList.remove('active');
+  masterBlue.classList.remove('active');
+
+  // Set new active state
+  if (newState === 'red') masterRed.classList.add('active');
+  else if (newState === 'off') masterOff.classList.add('active');
+  else if (newState === 'blue') masterBlue.classList.add('active');
+}
+
+masterRed.addEventListener('click', () => updateMasterToggle('red'));
+masterOff.addEventListener('click', () => updateMasterToggle('off'));
+masterBlue.addEventListener('click', () => updateMasterToggle('blue'));

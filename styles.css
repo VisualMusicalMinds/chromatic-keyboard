@@ -34,6 +34,29 @@ body {
   box-sizing: border-box;
 }
 
+/* --- Master Controls --- */
+.master-controls {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.toggle-option.wide-option {
+  width: auto;
+  min-width: 35px;
+  padding: 0 10px;
+}
+
+.toggle-option.active.red-option {
+  background: #FF3B30;
+  box-shadow: 0 0 10px rgba(255, 59, 48, 0.7);
+}
+
+.toggle-option.active.blue-option {
+  background: #007AFF;
+  box-shadow: 0 0 10px rgba(0, 122, 255, 0.7);
+}
+
 .instrument-controls {
   display: flex;
   flex-direction: column;
