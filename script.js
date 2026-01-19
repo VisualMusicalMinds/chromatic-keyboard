@@ -1367,14 +1367,38 @@ function drawKeyboard(numOctaves = 1) {
 let isDragging = false;
 let lastDraggedNote = null;
 
+// 'off' (default), 'red', 'blue'
+let masterColorState = 'off';
+
 function pressVisual(finalNote, pressed) {
   const el = document.querySelector(`[data-note="${finalNote}"]`);
   if (!el) return;
 
   el.classList.toggle('pressed', pressed);
 
+  // === MASTER TOGGLE LOGIC (OVERRIDE) ===
   const noteName = finalNote.slice(0, -1);
   const colorMode = toggleStates.color[currentToggleStates.color];
+
+  if (pressed) {
+    let overrideColor = null;
+    if (masterColorState === 'red') {
+      overrideColor = '#FF3B30'; // iOS Red
+    } else if (masterColorState === 'blue') {
+      overrideColor = '#007AFF'; // iOS Blue
+    }
+
+    if (overrideColor) {
+      // If Color toggle is 't-green' (gradient mode) and it's a white key, preserve top color
+      if (colorMode === 't-green' && noteColors[noteName] && el.classList.contains('white-key')) {
+        const topColor = noteColors[noteName];
+        el.style.background = `linear-gradient(to bottom, ${topColor} 50%, ${overrideColor} 50%)`;
+      } else {
+        el.style.background = overrideColor;
+      }
+      return;
+    }
+  }
   const isWhiteKey = el.classList.contains('white-key');
 
   if (isWhiteKey) {
@@ -1843,3 +1867,26 @@ collapseBtn.addEventListener('click', () => {
     collapseBtn.textContent = '▼';
   }
 });
+
+// -------- MASTER COLOR TOGGLE LOGIC --------
+const masterRed = document.getElementById('master-red');
+const masterOff = document.getElementById('master-off');
+const masterBlue = document.getElementById('master-blue');
+
+function updateMasterToggle(newState) {
+  masterColorState = newState;
+
+  // Reset visual active states
+  masterRed.classList.remove('active');
+  masterOff.classList.remove('active');
+  masterBlue.classList.remove('active');
+
+  // Set new active state
+  if (newState === 'red') masterRed.classList.add('active');
+  else if (newState === 'off') masterOff.classList.add('active');
+  else if (newState === 'blue') masterBlue.classList.add('active');
+}
+
+masterRed.addEventListener('click', () => updateMasterToggle('red'));
+masterOff.addEventListener('click', () => updateMasterToggle('off'));
+masterBlue.addEventListener('click', () => updateMasterToggle('blue'));
